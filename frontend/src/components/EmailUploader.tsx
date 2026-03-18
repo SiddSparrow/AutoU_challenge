@@ -159,7 +159,7 @@ export function EmailUploader({ onSubmitText, onSubmitFile, loading }: Props) {
             Classificando...
           </span>
         ) : (
-          "Classificar Email"
+          mode === "text" ? "Classificar Texto" : "Classificar Arquivo"
         )}
       </button>
     </div>
