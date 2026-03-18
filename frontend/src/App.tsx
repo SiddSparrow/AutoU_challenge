@@ -6,6 +6,7 @@ import { ResultCard } from "./components/ResultCard";
 import { ResponseSuggestion } from "./components/ResponseSuggestion";
 import { History } from "./components/History";
 import { StatsCards } from "./components/StatsCards";
+import { ExportButtons } from "./components/ExportButtons";
 import { useEmailClassifier } from "./hooks/useEmailClassifier";
 import { useClassificationHistory } from "./hooks/useClassificationHistory";
 import type { HistoryEntry } from "./types";
@@ -42,6 +43,7 @@ function AppContent() {
           <>
             <ResultCard result={result} />
             <ResponseSuggestion response={result.suggested_response} />
+            <ExportButtons result={result} history={history} />
           </>
         )}
 
@@ -55,7 +57,7 @@ function AppContent() {
       </main>
 
       <footer className="text-center py-6 text-xs text-gray-400 dark:text-gray-500">
-        Email Classifier &mdash; Powered by Claude AI
+        Desafio Técnico &mdash; AutoU 
       </footer>
     </div>
   );
