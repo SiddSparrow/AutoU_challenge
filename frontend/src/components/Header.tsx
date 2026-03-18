@@ -3,16 +3,16 @@ import { ThemeToggle } from "./ThemeToggle";
 
 export function Header() {
   return (
-    <header className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-8 px-6 shadow-lg">
-      <div className="max-w-4xl mx-auto flex items-center gap-4">
-        <div className="bg-white/20 p-3 rounded-xl">
-          <HiOutlineMail className="text-3xl" />
+    <header className="bg-white dark:bg-base border-b border-gray-200 dark:border-border py-5 px-6 transition-colors">
+      <div className="max-w-5xl mx-auto flex items-center gap-4">
+        <div className="bg-accent/10 p-2.5 rounded-xl">
+          <HiOutlineMail className="text-2xl text-accent" />
         </div>
         <div className="flex-1">
-          <h1 className="text-3xl font-bold tracking-tight">
+          <h1 className="text-xl font-bold tracking-tight text-gray-900 dark:text-zinc-100">
             Email Classifier
           </h1>
-          <p className="text-blue-100 text-sm mt-1">
+          <p className="text-zinc-400 dark:text-zinc-500 text-xs mt-0.5">
             Classificação inteligente de emails com IA
           </p>
         </div>
