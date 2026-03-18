@@ -47,7 +47,16 @@ class ClaudeClassifier(Classifier):
         self._model = settings.ai_model
 
     async def classify(self, text: str) -> ClassificationResult:
+        logger.info("classify() called | model=%s | text_length=%d", self._model, len(text))
+        logger.info("API key configured: %s", bool(settings.anthropic_api_key))
+
+        if not settings.anthropic_api_key:
+            raise ClassificationError(
+                "AI service is not configured. Set the ANTHROPIC_API_KEY environment variable."
+            )
+
         try:
+            logger.info("Sending request to Claude API...")
             message = await self._client.messages.create(
                 model=self._model,
                 max_tokens=1024,
@@ -60,8 +69,22 @@ class ClaudeClassifier(Classifier):
                 ],
             )
 
+            logger.info("Claude API response received | stop_reason=%s", message.stop_reason)
             response_text = message.content[0].text
-            data = json.loads(response_text)
+            logger.info("Raw response length: %d chars", len(response_text))
+            logger.debug("Raw response: %s", response_text[:500])
+
+            # Strip markdown code fences if Claude wraps JSON in ```
+            cleaned = response_text.strip()
+            if cleaned.startswith("```"):
+                cleaned = cleaned.split("\n", 1)[1] if "\n" in cleaned else cleaned[3:]
+                if cleaned.endswith("```"):
+                    cleaned = cleaned[:-3]
+                cleaned = cleaned.strip()
+                logger.info("Stripped markdown fences from response")
+
+            data = json.loads(cleaned)
+            logger.info("JSON parsed successfully | category=%s", data.get("category"))
 
             return ClassificationResult(
                 category=data["category"],
@@ -71,10 +94,14 @@ class ClaudeClassifier(Classifier):
             )
         except json.JSONDecodeError as e:
             logger.error("Failed to parse Claude response as JSON: %s", e)
+            logger.error("Raw response was: %s", response_text)
             raise ClassificationError("AI returned an invalid response format")
         except anthropic.APIError as e:
-            logger.error("Claude API error: %s", e)
+            logger.error("Claude API error [%s]: %s", type(e).__name__, e)
             raise ClassificationError(f"AI service error: {e.message}")
         except KeyError as e:
             logger.error("Missing key in Claude response: %s", e)
             raise ClassificationError("AI response missing required fields")
+        except Exception as e:
+            logger.error("Unexpected error during classification: [%s] %s", type(e).__name__, e)
+            raise ClassificationError(f"Unexpected error: {str(e)}")

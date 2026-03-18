@@ -1,8 +1,15 @@
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes.email_routes import router as email_router
 from app.config import settings
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s | %(levelname)-7s | %(name)s | %(message)s",
+)
 
 app = FastAPI(
     title="Email Classifier API",
