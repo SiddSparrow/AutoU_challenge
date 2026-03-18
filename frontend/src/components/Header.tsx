@@ -1,4 +1,5 @@
 import { HiOutlineMail } from "react-icons/hi";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function Header() {
   return (
@@ -7,7 +8,7 @@ export function Header() {
         <div className="bg-white/20 p-3 rounded-xl">
           <HiOutlineMail className="text-3xl" />
         </div>
-        <div>
+        <div className="flex-1">
           <h1 className="text-3xl font-bold tracking-tight">
             Email Classifier
           </h1>
@@ -15,6 +16,7 @@ export function Header() {
             Classificação inteligente de emails com IA
           </p>
         </div>
+        <ThemeToggle />
       </div>
     </header>
   );

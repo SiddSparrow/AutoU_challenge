@@ -1,16 +1,17 @@
 import { Toaster } from "react-hot-toast";
+import { ThemeProvider } from "./contexts/ThemeContext";
 import { Header } from "./components/Header";
 import { EmailUploader } from "./components/EmailUploader";
 import { ResultCard } from "./components/ResultCard";
 import { ResponseSuggestion } from "./components/ResponseSuggestion";
 import { useEmailClassifier } from "./hooks/useEmailClassifier";
 
-function App() {
+function AppContent() {
   const { result, loading, error, classifyText, classifyFile } =
     useEmailClassifier();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
       <Toaster position="top-right" />
       <Header />
 
@@ -22,7 +23,7 @@ function App() {
         />
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl p-4 text-sm">
+          <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 rounded-xl p-4 text-sm">
             {error}
           </div>
         )}
@@ -35,10 +36,18 @@ function App() {
         )}
       </main>
 
-      <footer className="text-center py-6 text-xs text-gray-400">
+      <footer className="text-center py-6 text-xs text-gray-400 dark:text-gray-500">
         Email Classifier &mdash; Powered by Claude AI
       </footer>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   );
 }
 
