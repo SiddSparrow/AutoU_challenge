@@ -19,7 +19,7 @@ export function ExportButtons({ result, history }: Props) {
       {hasResult && (
         <button
           onClick={() => exportResultPdf(result)}
-          className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium rounded-lg transition-all bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 text-blue-600 dark:text-blue-400"
+          className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium rounded-lg transition-all border border-gray-200 dark:border-border hover:bg-gray-100 dark:hover:bg-card-hover text-zinc-500 dark:text-zinc-400"
         >
           <HiOutlineDocumentDownload className="text-sm" />
           Exportar PDF
@@ -28,7 +28,7 @@ export function ExportButtons({ result, history }: Props) {
       {hasHistory && (
         <button
           onClick={() => exportHistoryCsv(history)}
-          className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium rounded-lg transition-all bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400"
+          className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium rounded-lg transition-all border border-gray-200 dark:border-border hover:bg-gray-100 dark:hover:bg-card-hover text-zinc-500 dark:text-zinc-400"
         >
           <HiOutlineTable className="text-sm" />
           Exportar CSV
