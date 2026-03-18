@@ -4,11 +4,20 @@ import { Header } from "./components/Header";
 import { EmailUploader } from "./components/EmailUploader";
 import { ResultCard } from "./components/ResultCard";
 import { ResponseSuggestion } from "./components/ResponseSuggestion";
+import { History } from "./components/History";
 import { useEmailClassifier } from "./hooks/useEmailClassifier";
+import { useClassificationHistory } from "./hooks/useClassificationHistory";
+import type { HistoryEntry } from "./types";
 
 function AppContent() {
-  const { result, loading, error, classifyText, classifyFile } =
-    useEmailClassifier();
+  const { history, addEntry, clearHistory } = useClassificationHistory();
+
+  const { result, setResult, loading, error, classifyText, classifyFile } =
+    useEmailClassifier({ onSuccess: addEntry });
+
+  const handleSelectHistory = (entry: HistoryEntry) => {
+    setResult(entry);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
@@ -34,6 +43,12 @@ function AppContent() {
             <ResponseSuggestion response={result.suggested_response} />
           </>
         )}
+
+        <History
+          history={history}
+          onClear={clearHistory}
+          onSelect={handleSelectHistory}
+        />
       </main>
 
       <footer className="text-center py-6 text-xs text-gray-400 dark:text-gray-500">

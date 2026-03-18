@@ -2,7 +2,11 @@ import { useState } from "react";
 import type { ClassificationResponse } from "../types";
 import { classifyText, classifyFile } from "../services/api";
 
-export function useEmailClassifier() {
+interface Options {
+  onSuccess?: (result: ClassificationResponse) => void;
+}
+
+export function useEmailClassifier(options?: Options) {
   const [result, setResult] = useState<ClassificationResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -19,6 +23,7 @@ export function useEmailClassifier() {
     try {
       const data = await classifyText(text);
       setResult(data);
+      options?.onSuccess?.(data);
     } catch (err: unknown) {
       if (err && typeof err === "object" && "response" in err) {
         const axiosErr = err as { response?: { data?: { detail?: string } } };
@@ -40,6 +45,7 @@ export function useEmailClassifier() {
     try {
       const data = await classifyFile(file);
       setResult(data);
+      options?.onSuccess?.(data);
     } catch (err: unknown) {
       if (err && typeof err === "object" && "response" in err) {
         const axiosErr = err as { response?: { data?: { detail?: string } } };
@@ -56,6 +62,7 @@ export function useEmailClassifier() {
 
   return {
     result,
+    setResult,
     loading,
     error,
     reset,

@@ -6,4 +6,9 @@ export interface ClassificationResponse {
   original_text: string;
 }
 
+export interface HistoryEntry extends ClassificationResponse {
+  id: string;
+  timestamp: string;
+}
+
 export type InputMode = "text" | "file";
