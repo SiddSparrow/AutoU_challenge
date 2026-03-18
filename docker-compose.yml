@@ -1,0 +1,21 @@
+services:
+  backend:
+    build: ./backend
+    container_name: email-classifier-api
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    environment:
+      - ALLOWED_ORIGINS=http://localhost,http://localhost:80
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: ""
+    container_name: email-classifier-web
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
