@@ -5,6 +5,7 @@ import { EmailUploader } from "./components/EmailUploader";
 import { ResultCard } from "./components/ResultCard";
 import { ResponseSuggestion } from "./components/ResponseSuggestion";
 import { History } from "./components/History";
+import { StatsCards } from "./components/StatsCards";
 import { useEmailClassifier } from "./hooks/useEmailClassifier";
 import { useClassificationHistory } from "./hooks/useClassificationHistory";
 import type { HistoryEntry } from "./types";
@@ -43,6 +44,8 @@ function AppContent() {
             <ResponseSuggestion response={result.suggested_response} />
           </>
         )}
+
+        <StatsCards history={history} />
 
         <History
           history={history}
