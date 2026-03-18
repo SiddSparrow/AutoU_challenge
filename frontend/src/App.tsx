@@ -22,11 +22,20 @@ function AppContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
-      <Toaster position="top-right" />
+    <div className="min-h-screen bg-gray-50 dark:bg-base transition-colors">
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          style: {
+            background: "#12121a",
+            color: "#f1f1f5",
+            border: "1px solid #1e1e2e",
+          },
+        }}
+      />
       <Header />
 
-      <main className="max-w-2xl mx-auto px-4 py-10 space-y-6">
+      <main className="max-w-5xl mx-auto px-6 py-10 space-y-6">
         <EmailUploader
           onSubmitText={classifyText}
           onSubmitFile={classifyFile}
@@ -34,17 +43,19 @@ function AppContent() {
         />
 
         {error && (
-          <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 rounded-xl p-4 text-sm">
+          <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-700 dark:text-red-400 rounded-2xl p-4 text-sm animate-fade-in">
             {error}
           </div>
         )}
 
         {result && (
-          <>
-            <ResultCard result={result} />
-            <ResponseSuggestion response={result.suggested_response} />
+          <div className="space-y-6 animate-slide-up">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <ResultCard result={result} />
+              <ResponseSuggestion response={result.suggested_response} />
+            </div>
             <ExportButtons result={result} history={history} />
-          </>
+          </div>
         )}
 
         <StatsCards history={history} />
@@ -56,8 +67,8 @@ function AppContent() {
         />
       </main>
 
-      <footer className="text-center py-6 text-xs text-gray-400 dark:text-gray-500">
-        Desafio Técnico &mdash; AutoU 
+      <footer className="text-center py-8 text-xs text-zinc-500 dark:text-zinc-600">
+        Desafio Técnico &mdash; AutoU
       </footer>
     </div>
   );
