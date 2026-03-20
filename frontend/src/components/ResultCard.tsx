@@ -10,49 +10,54 @@ export function ResultCard({ result }: Props) {
   const confidencePercent = Math.round(result.confidence * 100);
 
   return (
-    <div className="bg-white dark:bg-card rounded-2xl border border-gray-200 dark:border-border p-6 space-y-5 animate-fade-in">
-      <h3 className="text-sm font-medium text-zinc-500 uppercase tracking-wider">
-        Resultado da Classificação
-      </h3>
+    <div className="bg-white dark:bg-card rounded-xl border border-gray-200 dark:border-border p-5 space-y-4 animate-fade-in transition-colors">
+      <p className="text-xs font-medium text-zinc-400 uppercase tracking-widest">
+        Resultado
+      </p>
 
       {/* Category Badge */}
-      <div className="flex items-center gap-3">
-        <div
-          className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold ${
-            isProdutivo
-              ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-              : "bg-zinc-500/10 text-zinc-400 border border-zinc-500/20"
-          }`}
-        >
-          {isProdutivo ? (
-            <HiOutlineCheckCircle className="text-lg" />
-          ) : (
-            <HiOutlineXCircle className="text-lg" />
-          )}
-          {result.category}
-        </div>
+      <div
+        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium border ${
+          isProdutivo
+            ? "bg-emerald-500/8 text-emerald-400 border-emerald-500/20"
+            : "bg-zinc-500/8 text-zinc-400 border-zinc-500/20"
+        }`}
+      >
+        {isProdutivo ? (
+          <HiOutlineCheckCircle className="text-sm" />
+        ) : (
+          <HiOutlineXCircle className="text-sm" />
+        )}
+        {result.category}
+      </div>
 
-        {/* Confidence */}
-        <div className="flex-1">
-          <div className="flex justify-between text-xs text-zinc-500 mb-1.5">
-            <span>Confiança</span>
-            <span className="font-semibold text-zinc-300">{confidencePercent}%</span>
-          </div>
-          <div className="h-2 bg-gray-100 dark:bg-base rounded-full overflow-hidden">
-            <div
-              className="h-full rounded-full transition-all duration-700 bg-accent"
-              style={{ width: `${confidencePercent}%` }}
-            />
-          </div>
+      {/* Confidence */}
+      <div className="space-y-1.5">
+        <div className="flex justify-between items-center text-xs">
+          <span className="text-zinc-500">Confiança</span>
+          <span className="font-medium text-zinc-300 tabular-nums">
+            {confidencePercent}%
+          </span>
+        </div>
+        <div className="h-1 bg-gray-100 dark:bg-base rounded-full overflow-hidden">
+          <div
+            className="h-full rounded-full transition-all duration-700"
+            style={{
+              width: `${confidencePercent}%`,
+              background: "linear-gradient(90deg, #7c3aed, #a78bfa)",
+            }}
+          />
         </div>
       </div>
 
       {/* Summary */}
-      <div className="bg-gray-50 dark:bg-base rounded-xl p-4 border border-gray-100 dark:border-border">
-        <p className="text-xs font-medium text-zinc-500 mb-1.5 uppercase tracking-wider">
+      <div className="pt-1 border-t border-gray-100 dark:border-border">
+        <p className="text-xs text-zinc-500 mb-1.5 uppercase tracking-widest">
           Resumo
         </p>
-        <p className="text-gray-700 dark:text-zinc-200 text-sm leading-relaxed">{result.summary}</p>
+        <p className="text-sm text-gray-700 dark:text-zinc-300 leading-relaxed">
+          {result.summary}
+        </p>
       </div>
     </div>
   );

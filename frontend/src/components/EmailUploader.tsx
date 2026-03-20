@@ -8,10 +8,7 @@ interface Props {
   loading: boolean;
 }
 
-const ACCEPTED_TYPES = [
-  "text/plain",
-  "application/pdf",
-];
+const ACCEPTED_TYPES = ["text/plain", "application/pdf"];
 
 export function EmailUploader({ onSubmitText, onSubmitFile, loading }: Props) {
   const [mode, setMode] = useState<InputMode>("text");
@@ -42,31 +39,32 @@ export function EmailUploader({ onSubmitText, onSubmitFile, loading }: Props) {
     (mode === "file" && file !== null);
 
   return (
-    <div className="bg-white dark:bg-card rounded-2xl border border-gray-200 dark:border-border p-6 space-y-5">
+    <div className="bg-white dark:bg-black rounded-xl border border-slate-200 dark:border-border p-5 space-y-4 transition-colors">
       {/* Mode Toggle */}
-      <div className="flex gap-1 bg-gray-100 dark:bg-base p-1 rounded-xl w-fit">
-        <button
-          onClick={() => setMode("text")}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-            mode === "text"
-              ? "bg-white dark:bg-card text-accent shadow-sm"
-              : "text-gray-500 dark:text-zinc-500 hover:text-gray-700 dark:hover:text-zinc-300"
-          }`}
-        >
-          <HiOutlineDocumentText className="inline mr-1.5 -mt-0.5" />
-          Colar Texto
-        </button>
-        <button
-          onClick={() => setMode("file")}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-            mode === "file"
-              ? "bg-white dark:bg-card text-accent shadow-sm"
-              : "text-gray-500 dark:text-zinc-500 hover:text-gray-700 dark:hover:text-zinc-300"
-          }`}
-        >
-          <HiOutlineUpload className="inline mr-1.5 -mt-0.5" />
-          Upload Arquivo
-        </button>
+      <div className="flex gap-0.5 bg-slate-100 dark:bg-base p-0.5 rounded-lg w-fit border border-slate-200 dark:border-border">
+        {(["text", "file"] as InputMode[]).map((m) => (
+          <button
+            key={m}
+            onClick={() => setMode(m)}
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${
+              mode === m
+                ? "bg-white dark:bg-black text-slate-800 dark:text-zinc-100 shadow-sm"
+                : "text-slate-500 dark:text-zinc-500 hover:text-slate-700 dark:hover:text-zinc-300"
+            }`}
+          >
+            {m === "text" ? (
+              <>
+                <HiOutlineDocumentText className="text-sm" />
+                Colar Texto
+              </>
+            ) : (
+              <>
+                <HiOutlineUpload className="text-sm" />
+                Upload Arquivo
+              </>
+            )}
+          </button>
+        ))}
       </div>
 
       {/* Text Input */}
@@ -75,7 +73,7 @@ export function EmailUploader({ onSubmitText, onSubmitFile, loading }: Props) {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Cole o conteúdo do email aqui..."
-          className="w-full h-48 p-4 border border-gray-200 dark:border-border rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 bg-white dark:bg-base text-gray-700 dark:text-zinc-200 placeholder-gray-400 dark:placeholder-zinc-600 transition-colors"
+          className="w-full h-44 p-3.5 border border-slate-200 dark:border-border rounded-lg resize-none text-sm leading-relaxed focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent/40 bg-white dark:bg-base text-slate-700 dark:text-zinc-200 placeholder-slate-400 dark:placeholder-zinc-600 transition-all"
         />
       )}
 
@@ -89,12 +87,12 @@ export function EmailUploader({ onSubmitText, onSubmitFile, loading }: Props) {
           onDragLeave={() => setDragOver(false)}
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
-          className={`h-48 border-2 border-dashed rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all ${
+          className={`h-44 border border-dashed rounded-lg flex flex-col items-center justify-center cursor-pointer transition-all duration-200 ${
             dragOver
-              ? "border-accent bg-accent/5"
+              ? "border-accent/60 bg-accent/5"
               : file
-                ? "border-emerald-500/50 bg-emerald-500/5"
-                : "border-gray-300 dark:border-border hover:border-accent/50 hover:bg-gray-50 dark:hover:bg-card-hover"
+                ? "border-emerald-500/40 bg-emerald-500/5"
+                : "border-slate-300 dark:border-border hover:border-accent/40 hover:bg-slate-50 dark:hover:bg-base"
           }`}
         >
           <input
@@ -109,19 +107,17 @@ export function EmailUploader({ onSubmitText, onSubmitFile, loading }: Props) {
           />
           {file ? (
             <>
-              <HiOutlineDocumentText className="text-4xl text-emerald-500 mb-2" />
+              <HiOutlineDocumentText className="text-3xl text-emerald-500 mb-2" />
               <p className="text-sm font-medium text-emerald-400">{file.name}</p>
-              <p className="text-xs text-emerald-500/70 mt-1">
-                Clique para trocar o arquivo
-              </p>
+              <p className="text-xs text-zinc-500 mt-1">Clique para trocar</p>
             </>
           ) : (
             <>
-              <HiOutlineUpload className="text-4xl text-zinc-500 dark:text-zinc-600 mb-2" />
-              <p className="text-sm text-gray-500 dark:text-zinc-400">
-                Arraste um arquivo .txt ou .pdf aqui
+              <HiOutlineUpload className="text-3xl text-zinc-500 mb-2" />
+              <p className="text-sm text-slate-500 dark:text-zinc-400">
+                Arraste um arquivo .txt ou .pdf
               </p>
-              <p className="text-xs text-gray-400 dark:text-zinc-600 mt-1">
+              <p className="text-xs text-slate-400 dark:text-zinc-600 mt-1">
                 ou clique para selecionar
               </p>
             </>
@@ -129,19 +125,15 @@ export function EmailUploader({ onSubmitText, onSubmitFile, loading }: Props) {
         </div>
       )}
 
-      {/* Submit */}
+      {/* Submit — outlined ghost style */}
       <button
         onClick={handleSubmit}
         disabled={!isValid || loading}
-        className="w-full py-3 bg-accent hover:bg-accent-dark text-white font-semibold rounded-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+        className="w-full py-2.5 rounded-lg text-sm font-medium transition-all duration-200 border border-accent/30 text-accent hover:bg-accent/8 hover:border-accent/50 focus:outline-none focus:ring-1 focus:ring-accent/30 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:border-accent/30"
       >
         {loading ? (
           <span className="flex items-center justify-center gap-2">
-            <svg
-              className="animate-spin h-5 w-5"
-              viewBox="0 0 24 24"
-              fill="none"
-            >
+            <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
               <circle
                 className="opacity-25"
                 cx="12"
@@ -158,8 +150,10 @@ export function EmailUploader({ onSubmitText, onSubmitFile, loading }: Props) {
             </svg>
             Classificando...
           </span>
+        ) : mode === "text" ? (
+          "Classificar Texto"
         ) : (
-          mode === "text" ? "Classificar Texto" : "Classificar Arquivo"
+          "Classificar Arquivo"
         )}
       </button>
     </div>

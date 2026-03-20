@@ -23,50 +23,50 @@ export function History({ history, onClear, onSelect }: Props) {
   const displayed = expanded ? history : history.slice(0, 3);
 
   return (
-    <div className="bg-white dark:bg-card rounded-2xl border border-gray-200 dark:border-border p-6 space-y-4">
+    <div className="bg-white dark:bg-card rounded-xl border border-gray-200 dark:border-border p-5 space-y-3 transition-colors">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-zinc-500 uppercase tracking-wider flex items-center gap-2">
-          <HiOutlineClock className="text-base" />
+        <h3 className="text-xs font-medium text-zinc-400 uppercase tracking-widest flex items-center gap-2">
+          <HiOutlineClock className="text-sm" />
           Histórico
           <span className="text-zinc-600">({history.length})</span>
         </h3>
         <button
           onClick={onClear}
-          className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg transition-all border border-red-500/20 hover:bg-red-500/10 text-red-400"
+          className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-md border border-red-500/20 hover:bg-red-500/8 text-red-400/70 hover:text-red-400 transition-all duration-200"
         >
           <HiOutlineTrash className="text-sm" />
           Limpar
         </button>
       </div>
 
-      <div className="space-y-1">
+      <div className="space-y-0.5">
         {displayed.map((entry) => (
           <button
             key={entry.id}
             onClick={() => onSelect(entry)}
-            className="w-full text-left p-3 rounded-xl border border-transparent hover:border-border hover:bg-gray-50 dark:hover:bg-card-hover transition-all group"
+            className="w-full text-left px-3 py-2.5 rounded-lg border border-transparent hover:border-gray-200 dark:hover:border-border hover:bg-gray-50 dark:hover:bg-card-hover transition-all duration-200 group"
           >
             <div className="flex items-center gap-3">
               <div
-                className={`flex-shrink-0 ${
+                className={`shrink-0 ${
                   entry.category === "Produtivo"
                     ? "text-emerald-500"
                     : "text-zinc-500"
                 }`}
               >
                 {entry.category === "Produtivo" ? (
-                  <HiOutlineCheckCircle className="text-lg" />
+                  <HiOutlineCheckCircle className="text-base" />
                 ) : (
-                  <HiOutlineXCircle className="text-lg" />
+                  <HiOutlineXCircle className="text-base" />
                 )}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-gray-700 dark:text-zinc-300 truncate">
                   {entry.summary}
                 </p>
-                <div className="flex items-center gap-2 mt-1">
+                <div className="flex items-center gap-2 mt-0.5">
                   <span
-                    className={`text-xs font-medium ${
+                    className={`text-xs ${
                       entry.category === "Produtivo"
                         ? "text-emerald-500"
                         : "text-zinc-500"
@@ -74,7 +74,7 @@ export function History({ history, onClear, onSelect }: Props) {
                   >
                     {entry.category}
                   </span>
-                  <span className="text-xs text-zinc-600">
+                  <span className="text-xs text-zinc-600 tabular-nums">
                     {Math.round(entry.confidence * 100)}%
                   </span>
                   <span className="text-xs text-zinc-700">&middot;</span>
@@ -96,16 +96,16 @@ export function History({ history, onClear, onSelect }: Props) {
       {history.length > 3 && (
         <button
           onClick={() => setExpanded(!expanded)}
-          className="w-full flex items-center justify-center gap-1 py-2 text-xs font-medium text-zinc-500 hover:text-zinc-300 transition-all"
+          className="w-full flex items-center justify-center gap-1 py-1.5 text-xs text-zinc-500 hover:text-zinc-300 transition-all duration-200"
         >
           {expanded ? (
             <>
-              <HiOutlineChevronUp />
+              <HiOutlineChevronUp className="text-sm" />
               Mostrar menos
             </>
           ) : (
             <>
-              <HiOutlineChevronDown />
+              <HiOutlineChevronDown className="text-sm" />
               Ver todos ({history.length})
             </>
           )}

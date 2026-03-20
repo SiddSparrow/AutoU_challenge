@@ -1,31 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-base: #0a0a0f;
-  --color-card: #12121a;
-  --color-card-hover: #1a1a25;
-  --color-border: #1e1e2e;
-  --color-border-hover: #2a2a3a;
-  --color-accent: #7c3aed;
-  --color-accent-dark: #6d28d9;
+  /* Base palette — pure neutrals, no purple tint */
+  --color-base: #0a0a0a;
+  --color-card: #141414;
+  --color-card-hover: #1c1c1c;
+  --color-border: #252525;
+  --color-border-hover: #333333;
+
+  /* Accent — blue for light mode, purple for dark (overridden below) */
+  --color-accent: #4361ee;
+  --color-accent-dark: #3451d1;
+
+  /* Typography */
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Dark mode: switch accent back to purple */
+.dark {
+  --color-accent: #d9ccf5;
+  --color-accent-dark: #7c3aed;
 }
 
 @keyframes fade-in {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes slide-up {
-  from { opacity: 0; transform: translateY(16px); }
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 @utility animate-fade-in {
-  animation: fade-in 0.4s ease-out;
+  animation: fade-in 0.3s ease-out;
 }
 
 @utility animate-slide-up {
-  animation: slide-up 0.5s ease-out;
+  animation: slide-up 0.4s ease-out;
 }
