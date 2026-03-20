@@ -6,9 +6,10 @@ from fastapi import UploadFile
 
 @dataclass
 class ClassificationResult:
-    """Result of an email classification (confidence is computed externally)."""
+    """Result of an email classification."""
 
     category: str
+    tag: str
     suggested_response: str
     summary: str
 

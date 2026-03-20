@@ -2,6 +2,7 @@ import {
   HiOutlineInbox,
   HiOutlineCheckCircle,
   HiOutlineXCircle,
+  HiOutlineShieldExclamation,
 } from "react-icons/hi";
 import type { ClassificationResponse, HistoryEntry } from "../types";
 import { ExportButtons } from "./ExportButtons";
@@ -16,8 +17,9 @@ export function MiniStatsBar({ history, result }: Props) {
 
   const produtivos = history.filter((e) => e.category === "Produtivo").length;
   const improdutivos = history.length - produtivos;
-  const avgConfidence =
-    history.reduce((sum, e) => sum + e.confidence, 0) / history.length;
+  const alertas = history.filter(
+    (e) => e.tag === "SPAM" || e.tag === "POSSÍVEL GOLPE"
+  ).length;
 
   const stats = [
     {
@@ -42,11 +44,11 @@ export function MiniStatsBar({ history, result }: Props) {
       subColor: "text-red-400",
     },
     {
-      icon: <span className="text-accent text-xs font-semibold">%</span>,
-      label: "Conf. Média",
-      value: `${Math.round(avgConfidence * 100)}%`,
-      sub: null,
-      subColor: "",
+      icon: <HiOutlineShieldExclamation className="text-red-400" />,
+      label: "Alertas",
+      value: alertas.toString(),
+      sub: alertas > 0 ? "spam/golpe" : null,
+      subColor: "text-red-400",
     },
   ];
 

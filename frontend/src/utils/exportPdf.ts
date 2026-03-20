@@ -30,7 +30,7 @@ export function exportResultPdf(result: ClassificationResponse) {
   doc.setFont("helvetica", "normal");
   doc.text(`Categoria: ${result.category}`, margin, y);
   y += 7;
-  doc.text(`Confianca: ${Math.round(result.confidence * 100)}%`, margin, y);
+  doc.text(`Tag: ${result.tag}`, margin, y);
   y += 12;
 
   // Summary

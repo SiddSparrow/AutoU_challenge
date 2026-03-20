@@ -1,7 +1,16 @@
+export type EmailTag =
+  | "SPAM"
+  | "POSSÍVEL GOLPE"
+  | "URGENTE"
+  | "SOLICITAÇÃO"
+  | "RECLAMAÇÃO"
+  | "REUNIÃO"
+  | "INFORMATIVO"
+  | "NÃO IMPORTANTE";
+
 export interface ClassificationResponse {
   category: "Produtivo" | "Improdutivo";
-  confidence: number;
-  confidence_flags: string[];
+  tag: EmailTag;
   suggested_response: string;
   summary: string;
   original_text: string;

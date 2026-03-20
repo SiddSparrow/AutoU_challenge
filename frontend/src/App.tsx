@@ -25,7 +25,7 @@ const viewMeta: Record<View, { title: string; subtitle: string }> = {
   },
   stats: {
     title: "Gráfico",
-    subtitle: "Confiança ao longo das classificações",
+    subtitle: "Volume de emails e distribuição por tags",
   },
 };
 
@@ -96,7 +96,7 @@ function AppContent() {
           )}
 
           {/* ── Stats / Chart view ── */}
-          {activeView === "stats" && <StatsCards history={history} />}
+          {activeView === "stats" && <StatsCards history={history} onSelectEntry={handleSelectHistory} />}
         </main>
       </div>
     </div>

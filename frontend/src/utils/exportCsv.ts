@@ -1,15 +1,14 @@
 import type { HistoryEntry } from "../types";
 
 export function exportHistoryCsv(history: HistoryEntry[]) {
-  const header = "Data,Categoria,Confianca,Resumo,Resposta Sugerida\n";
+  const header = "Data,Categoria,Tag,Resumo,Resposta Sugerida\n";
 
   const rows = history
     .map((entry) => {
       const date = new Date(entry.timestamp).toLocaleString("pt-BR");
-      const confidence = Math.round(entry.confidence * 100) + "%";
       const summary = csvEscape(entry.summary);
       const response = csvEscape(entry.suggested_response);
-      return `${date},${entry.category},${confidence},${summary},${response}`;
+      return `${date},${entry.category},${entry.tag},${summary},${response}`;
     })
     .join("\n");
 

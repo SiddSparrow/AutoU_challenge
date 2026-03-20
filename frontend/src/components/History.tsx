@@ -8,6 +8,7 @@ import {
   HiOutlineXCircle,
 } from "react-icons/hi";
 import type { HistoryEntry } from "../types";
+import { getTagStyle } from "../utils/tagStyles";
 
 interface Props {
   history: HistoryEntry[];
@@ -64,7 +65,7 @@ export function History({ history, onClear, onSelect }: Props) {
                 <p className="text-sm text-gray-700 dark:text-zinc-300 truncate">
                   {entry.summary}
                 </p>
-                <div className="flex items-center gap-2 mt-0.5">
+                <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                   <span
                     className={`text-xs ${
                       entry.category === "Produtivo"
@@ -74,9 +75,14 @@ export function History({ history, onClear, onSelect }: Props) {
                   >
                     {entry.category}
                   </span>
-                  <span className="text-xs text-zinc-600 tabular-nums">
-                    {Math.round(entry.confidence * 100)}%
-                  </span>
+                  {(() => {
+                    const s = getTagStyle(entry.tag);
+                    return (
+                      <span className={`text-xs px-1.5 py-0.5 rounded border font-medium ${s.bg} ${s.text} ${s.border}`}>
+                        {entry.tag}
+                      </span>
+                    );
+                  })()}
                   <span className="text-xs text-zinc-700">&middot;</span>
                   <span className="text-xs text-zinc-600">
                     {new Date(entry.timestamp).toLocaleDateString("pt-BR", {
