@@ -1,4 +1,4 @@
-import { HiOutlineCheckCircle, HiOutlineXCircle } from "react-icons/hi";
+import { HiOutlineCheckCircle, HiOutlineXCircle, HiOutlineExclamationCircle } from "react-icons/hi";
 import type { ClassificationResponse } from "../types";
 
 interface Props {
@@ -49,6 +49,21 @@ export function ResultCard({ result }: Props) {
           />
         </div>
       </div>
+
+      {/* Confidence flags */}
+      {result.confidence_flags.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {result.confidence_flags.map((flag) => (
+            <span
+              key={flag}
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-amber-500/8 text-amber-400 border border-amber-500/20"
+            >
+              <HiOutlineExclamationCircle className="shrink-0" />
+              {flag}
+            </span>
+          ))}
+        </div>
+      )}
 
       {/* Summary */}
       <div className="pt-1 border-t border-gray-100 dark:border-border">

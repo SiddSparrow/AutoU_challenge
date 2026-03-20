@@ -13,9 +13,8 @@ SYSTEM_PROMPT = """Você é um especialista em classificação de emails corpora
 
 Sua tarefa é:
 1. Classificar o email como "Produtivo" ou "Improdutivo"
-2. Atribuir um nível de confiança (0.0 a 1.0)
-3. Gerar um breve resumo do email
-4. Sugerir uma resposta profissional adequada
+2. Gerar um breve resumo do email
+3. Sugerir uma resposta profissional adequada
 
 ## Definições:
 - **Produtivo**: Emails que requerem uma ação ou resposta específica (solicitações de suporte, atualizações sobre casos, dúvidas técnicas, pedidos de informação, reclamações, solicitações de reunião).
@@ -25,7 +24,6 @@ Sua tarefa é:
 Responda APENAS com um JSON válido no seguinte formato, sem texto adicional:
 {
   "category": "Produtivo" ou "Improdutivo",
-  "confidence": 0.0 a 1.0,
   "summary": "Resumo breve do email em uma frase",
   "suggested_response": "Resposta profissional sugerida em português"
 }
@@ -33,10 +31,10 @@ Responda APENAS com um JSON válido no seguinte formato, sem texto adicional:
 ## Exemplos:
 
 Email: "Prezado suporte, gostaria de saber o status do chamado #12345 aberto semana passada referente ao erro no sistema de pagamentos."
-Resposta: {"category": "Produtivo", "confidence": 0.95, "summary": "Solicitação de status do chamado #12345 sobre erro no sistema de pagamentos", "suggested_response": "Prezado(a), agradecemos o contato. Informamos que o chamado #12345 está sendo analisado pela equipe técnica. Retornaremos com uma atualização em breve. Caso necessite de suporte urgente, entre em contato pelo nosso canal prioritário."}
+Resposta: {"category": "Produtivo", "summary": "Solicitação de status do chamado #12345 sobre erro no sistema de pagamentos", "suggested_response": "Prezado(a), agradecemos o contato. Informamos que o chamado #12345 está sendo analisado pela equipe técnica. Retornaremos com uma atualização em breve. Caso necessite de suporte urgente, entre em contato pelo nosso canal prioritário."}
 
 Email: "Feliz Natal a todos da equipe! Que 2026 seja repleto de conquistas e realizações!"
-Resposta: {"category": "Improdutivo", "confidence": 0.98, "summary": "Mensagem de felicitações de Natal e Ano Novo", "suggested_response": "Obrigado pela mensagem! Desejamos igualmente um excelente 2026 repleto de realizações. Boas festas!"}"""
+Resposta: {"category": "Improdutivo", "summary": "Mensagem de felicitações de Natal e Ano Novo", "suggested_response": "Obrigado pela mensagem! Desejamos igualmente um excelente 2026 repleto de realizações. Boas festas!"}"""
 
 
 class ClaudeClassifier(Classifier):
@@ -88,7 +86,6 @@ class ClaudeClassifier(Classifier):
 
             return ClassificationResult(
                 category=data["category"],
-                confidence=data["confidence"],
                 suggested_response=data["suggested_response"],
                 summary=data["summary"],
             )

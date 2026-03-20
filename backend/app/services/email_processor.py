@@ -6,6 +6,7 @@ from app.core.exceptions import EmptyContentError
 from app.core.interfaces import Classifier
 from app.models.schemas import ClassificationResponse
 from app.readers.reader_factory import ReaderFactory
+from app.services import confidence_scorer
 from app.services.text_preprocessor import TextPreprocessor
 
 logger = logging.getLogger(__name__)
@@ -46,11 +47,15 @@ class EmailProcessorService:
 
         logger.info("Sending to classifier: %s", type(self._classifier).__name__)
         result = await self._classifier.classify(processed_text)
-        logger.info("Classification result: category=%s, confidence=%.2f", result.category, result.confidence)
+
+        score = confidence_scorer.score(processed_text)
+        logger.info("Classification result: category=%s, confidence=%.2f, flags=%s",
+                    result.category, score.value, score.flags)
 
         return ClassificationResponse(
             category=result.category,
-            confidence=result.confidence,
+            confidence=score.value,
+            confidence_flags=score.flags,
             suggested_response=result.suggested_response,
             summary=result.summary,
             original_text=raw_text,
