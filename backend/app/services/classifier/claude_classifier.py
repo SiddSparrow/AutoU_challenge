@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 
 import anthropic
 
@@ -90,14 +91,13 @@ class ClaudeClassifier(Classifier):
             logger.info("Raw response length: %d chars", len(response_text))
             logger.debug("Raw response: %s", response_text[:500])
 
-            # Strip markdown code fences if Claude wraps JSON in ```
+            # Extract JSON object from response, tolerating surrounding text or markdown fences
             cleaned = response_text.strip()
-            if cleaned.startswith("```"):
-                cleaned = cleaned.split("\n", 1)[1] if "\n" in cleaned else cleaned[3:]
-                if cleaned.endswith("```"):
-                    cleaned = cleaned[:-3]
-                cleaned = cleaned.strip()
-                logger.info("Stripped markdown fences from response")
+            match = re.search(r"\{.*\}", cleaned, re.DOTALL)
+            if not match:
+                raise json.JSONDecodeError("No JSON object found", cleaned, 0)
+            cleaned = match.group(0)
+            logger.debug("Extracted JSON: %s", cleaned[:200])
 
             data = json.loads(cleaned)
             logger.info("JSON parsed successfully | category=%s", data.get("category"))
