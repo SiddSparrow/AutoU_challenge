@@ -6,6 +6,9 @@ console.log("[api] baseURL:", import.meta.env.VITE_API_URL || "https://autouchal
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "https://autouchallenge-production.up.railway.app",
+  headers: {
+    "X-API-Key": import.meta.env.VITE_API_KEY ?? "",
+  },
 });
  
 export async function classifyText(

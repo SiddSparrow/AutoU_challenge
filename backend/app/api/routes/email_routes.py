@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Query, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File
 
 from app.core.exceptions import (
     ClassificationError,
@@ -6,6 +6,7 @@ from app.core.exceptions import (
     TextExtractionError,
     UnsupportedFileTypeError,
 )
+from app.core.security import verify_api_key
 from app.models.schemas import ClassificationResponse, ClassifyTextRequest, HealthResponse
 from app.services.classifier.factory import ClassifierFactory
 from app.services.email_processor import EmailProcessorService
@@ -27,7 +28,7 @@ async def health_check():
     return HealthResponse()
 
 
-@router.post("/classify/text", response_model=ClassificationResponse)
+@router.post("/classify/text", response_model=ClassificationResponse, dependencies=[Depends(verify_api_key)])
 async def classify_text(request: ClassifyTextRequest):
     """Classify email from raw text input."""
     processor = _get_processor(request.provider)
@@ -39,7 +40,7 @@ async def classify_text(request: ClassifyTextRequest):
         raise HTTPException(status_code=502, detail=str(e))
 
 
-@router.post("/classify/file", response_model=ClassificationResponse)
+@router.post("/classify/file", response_model=ClassificationResponse, dependencies=[Depends(verify_api_key)])
 async def classify_file(
     file: UploadFile = File(...),
     provider: str = Query("claude", description="Classifier provider: claude or classic"),

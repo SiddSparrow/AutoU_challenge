@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     ai_model: str = "claude-sonnet-4-20250514"
     hf_token: str = ""
     hf_model: str = "MoritzLaurer/mDeBERTa-v3-base-mnli-xnli"
+    api_key: str = ""
 
     @property
     def cors_origins(self) -> list[str]:
