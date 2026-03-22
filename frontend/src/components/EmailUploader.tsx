@@ -1,17 +1,23 @@
 import { useState, useRef, type DragEvent } from "react";
-import { HiOutlineUpload, HiOutlineDocumentText } from "react-icons/hi";
-import type { InputMode } from "../types";
+import { HiOutlineUpload, HiOutlineDocumentText, HiOutlineSparkles, HiOutlineChip } from "react-icons/hi";
+import type { InputMode, Provider } from "../types";
 
 interface Props {
-  onSubmitText: (text: string) => void;
-  onSubmitFile: (file: File) => void;
+  onSubmitText: (text: string, provider: Provider) => void;
+  onSubmitFile: (file: File, provider: Provider) => void;
   loading: boolean;
 }
 
 const ACCEPTED_TYPES = ["text/plain", "application/pdf"];
 
+const PROVIDERS: { value: Provider; label: string; description: string }[] = [
+  { value: "claude", label: "Claude API", description: "IA generativa (Anthropic)" },
+  { value: "classic", label: "Classic NLP", description: "TF-IDF + Regressão Logística" },
+];
+
 export function EmailUploader({ onSubmitText, onSubmitFile, loading }: Props) {
   const [mode, setMode] = useState<InputMode>("text");
+  const [provider, setProvider] = useState<Provider>("claude");
   const [text, setText] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [dragOver, setDragOver] = useState(false);
@@ -28,9 +34,9 @@ export function EmailUploader({ onSubmitText, onSubmitFile, loading }: Props) {
 
   const handleSubmit = () => {
     if (mode === "text" && text.trim().length >= 10) {
-      onSubmitText(text.trim());
+      onSubmitText(text.trim(), provider);
     } else if (mode === "file" && file) {
-      onSubmitFile(file);
+      onSubmitFile(file, provider);
     }
   };
 
@@ -40,7 +46,7 @@ export function EmailUploader({ onSubmitText, onSubmitFile, loading }: Props) {
 
   return (
     <div className="bg-white dark:bg-black rounded-xl border border-slate-200 dark:border-border p-5 space-y-4 transition-colors">
-      {/* Mode Toggle */}
+      {/* Input mode toggle */}
       <div className="flex gap-0.5 bg-slate-100 dark:bg-base p-0.5 rounded-lg w-fit border border-slate-200 dark:border-border">
         {(["text", "file"] as InputMode[]).map((m) => (
           <button
@@ -125,7 +131,39 @@ export function EmailUploader({ onSubmitText, onSubmitFile, loading }: Props) {
         </div>
       )}
 
-      {/* Submit — outlined ghost style */}
+      {/* Provider toggle */}
+      <div className="space-y-1.5">
+        <p className="text-[10px] font-medium text-zinc-500 uppercase tracking-widest">
+          Classificador
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          {PROVIDERS.map((p) => (
+            <button
+              key={p.value}
+              onClick={() => setProvider(p.value)}
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-left transition-all duration-200 ${
+                provider === p.value
+                  ? "border-violet-500/40 bg-violet-500/8 text-violet-400"
+                  : "border-slate-200 dark:border-border text-slate-500 dark:text-zinc-500 hover:border-slate-300 dark:hover:border-zinc-600"
+              }`}
+            >
+              {p.value === "claude" ? (
+                <HiOutlineSparkles className="text-base shrink-0" />
+              ) : (
+                <HiOutlineChip className="text-base shrink-0" />
+              )}
+              <div className="min-w-0">
+                <p className="text-xs font-semibold leading-none">{p.label}</p>
+                <p className="text-[10px] leading-none mt-0.5 opacity-70 truncate">
+                  {p.description}
+                </p>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Submit */}
       <button
         onClick={handleSubmit}
         disabled={!isValid || loading}

@@ -1,3 +1,5 @@
+export type Provider = "claude" | "classic";
+
 export type EmailTag =
   | "SPAM"
   | "POSSÍVEL GOLPE"

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { ClassificationResponse } from "../types";
+import type { ClassificationResponse, Provider } from "../types";
 import { classifyText, classifyFile } from "../services/api";
 
 interface Options {
@@ -16,12 +16,12 @@ export function useEmailClassifier(options?: Options) {
     setError(null);
   };
 
-  const handleClassifyText = async (text: string) => {
+  const handleClassifyText = async (text: string, provider: Provider = "claude") => {
     setLoading(true);
     setError(null);
     setResult(null);
     try {
-      const data = await classifyText(text);
+      const data = await classifyText(text, provider);
       setResult(data);
       options?.onSuccess?.(data);
     } catch (err: unknown) {
@@ -38,12 +38,12 @@ export function useEmailClassifier(options?: Options) {
     }
   };
 
-  const handleClassifyFile = async (file: File) => {
+  const handleClassifyFile = async (file: File, provider: Provider = "claude") => {
     setLoading(true);
     setError(null);
     setResult(null);
     try {
-      const data = await classifyFile(file);
+      const data = await classifyFile(file, provider);
       setResult(data);
       options?.onSuccess?.(data);
     } catch (err: unknown) {
