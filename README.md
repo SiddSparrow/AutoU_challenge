@@ -74,12 +74,14 @@ docker compose up --build
 | `AI_MODEL` | Modelo Claude a usar | `claude-sonnet-4-20250514` |
 | `HF_TOKEN` | Token da HuggingFace (Inference API) | — |
 | `HF_MODEL` | Modelo HuggingFace para zero-shot | `MoritzLaurer/mDeBERTa-v3-base-mnli-xnli` |
+| `API_KEY` | Chave secreta para autenticar o frontend | — (desativado se vazio) |
 
 ### Frontend (`frontend/.env`)
 
 | Variável | Descrição | Padrão |
 |----------|-----------|--------|
 | `VITE_API_URL` | URL base do backend | `""` (vazio = relativo) |
+| `VITE_API_KEY` | Chave secreta enviada no header `X-API-Key` | — |
 
 > **Importante:** `VITE_API_URL` é embutida no bundle em build time. Em produção, configure a variável no painel da Vercel **antes** do deploy.
 
@@ -153,3 +155,4 @@ Configure as variáveis de ambiente no painel:
 | `ALLOWED_ORIGINS` | URL do frontend na Vercel (ex: `https://seu-app.vercel.app`) |
 | `HF_TOKEN` | Seu token da HuggingFace |
 | `HF_MODEL` | `MoritzLaurer/mDeBERTa-v3-base-mnli-xnli` |
+| `API_KEY` | Chave secreta compartilhada com o frontend |
