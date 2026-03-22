@@ -13,6 +13,7 @@ const ACCEPTED_TYPES = ["text/plain", "application/pdf"];
 const PROVIDERS: { value: Provider; label: string; description: string }[] = [
   { value: "claude", label: "Claude API", description: "IA generativa (Anthropic)" },
   { value: "classic", label: "Classic NLP", description: "TF-IDF + Regressão Logística" },
+  { value: "huggingface", label: "HuggingFace", description: "Zero-shot (XLM-RoBERTa)" },
 ];
 
 export function EmailUploader({ onSubmitText, onSubmitFile, loading }: Props) {

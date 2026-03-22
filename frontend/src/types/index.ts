@@ -1,4 +1,4 @@
-export type Provider = "claude" | "classic";
+export type Provider = "claude" | "classic" | "huggingface";
 
 export type EmailTag =
   | "SPAM"
