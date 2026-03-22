@@ -56,7 +56,7 @@ _RESPONSE_TEMPLATES: dict[str, str] = {
 }
 
 _CONFIDENCE_THRESHOLD = 0.4
-_HF_API_BASE = "https://api-inference.huggingface.co/models"
+_HF_API_BASE = "https://router.huggingface.co/models"
 
 
 def _first_sentence(text: str, max_chars: int = 200) -> str:
