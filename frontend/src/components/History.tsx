@@ -19,11 +19,25 @@ interface Props {
 export function History({ history, onClear, onSelect }: Props) {
   const [expanded, setExpanded] = useState(false);
 
-  if (history.length === 0) return null;
+  //if (history.length === 0) return null;
 
   const displayed = expanded ? history : history.slice(0, 3);
 
   return (
+    history.length === 0 ? (
+      <div className="bg-white dark:bg-card rounded-xl border border-gray-200 dark:border-border p-5 space-y-3 transition-colors">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs font-medium text-zinc-400 uppercase tracking-widest flex items-center gap-2">
+            <HiOutlineClock className="text-sm" />
+            Histórico
+            <span className="text-zinc-600">({history.length})</span>
+          </h3>
+        </div>
+        <p className="text-sm text-gray-700 dark:text-zinc-300">
+          Nenhuma classificação realizada ainda.
+        </p>
+      </div>
+    ) : ( 
     <div className="bg-white dark:bg-card rounded-xl border border-gray-200 dark:border-border p-5 space-y-3 transition-colors">
       <div className="flex items-center justify-between">
         <h3 className="text-xs font-medium text-zinc-400 uppercase tracking-widest flex items-center gap-2">
@@ -118,5 +132,5 @@ export function History({ history, onClear, onSelect }: Props) {
         </button>
       )}
     </div>
-  );
+  ));
 }
