@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 
 class ClassifyTextRequest(BaseModel):
     text: str = Field(..., min_length=10, description="Email text content to classify")
-    provider: Literal["claude", "classic"] = Field("claude", description="Classifier provider: claude or classic")
+    provider: Literal["claude", "classic", "huggingface"] = Field("claude", description="Classifier provider: claude, classic or huggingface")
 
 
 class ClassificationResponse(BaseModel):

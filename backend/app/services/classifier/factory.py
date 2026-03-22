@@ -1,6 +1,7 @@
 from app.core.interfaces import Classifier
 from app.services.classifier.claude_classifier import ClaudeClassifier
 from app.services.classifier.classic_nlp_classifier import ClassicNLPClassifier
+from app.services.classifier.huggingface_classifier import HuggingFaceClassifier
 
 
 class ClassifierFactory:
@@ -9,6 +10,7 @@ class ClassifierFactory:
     _classifiers: dict[str, type[Classifier]] = {
         "claude": ClaudeClassifier,
         "classic": ClassicNLPClassifier,
+        "huggingface": HuggingFaceClassifier,
     }
 
     @staticmethod
