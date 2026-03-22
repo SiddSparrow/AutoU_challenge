@@ -2,7 +2,7 @@ import axios from "axios";
 import type { ClassificationResponse, Provider } from "../types";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "",
+  baseURL: import.meta.env.VITE_API_URL || "https://autouchallenge-production.up.railway.app",
 });
  
 export async function classifyText(
