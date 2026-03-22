@@ -24,7 +24,7 @@ const viewMeta: Record<View, { title: string; subtitle: string }> = {
     subtitle: "Classificações realizadas nesta sessão",
   },
   stats: {
-    title: "Gráfico",
+    title: "Gráficos",
     subtitle: "Volume de emails e distribuição por tags",
   },
 };
