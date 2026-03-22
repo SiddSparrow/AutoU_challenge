@@ -1,13 +1,26 @@
 # Email Classifier
 
-Aplicação web para classificação inteligente de emails usando IA. Classifica emails como **Produtivo** ou **Improdutivo** e sugere respostas automáticas.
+Aplicação web para classificação inteligente de emails do setor financeiro. Classifica emails como **Produtivo** ou **Improdutivo**, atribui uma tag, gera um resumo e sugere resposta automática.
 
 ## Stack
 
-- **Backend:** Python + FastAPI
-- **Frontend:** React + TypeScript + Vite + Tailwind CSS
-- **IA:** Claude API (Anthropic)
-- **PDF:** PyMuPDF
+- **Backend:** Python 3.13 + FastAPI
+- **Frontend:** React 18 + TypeScript + Vite + Tailwind CSS v4
+- **IA:** Claude API (Anthropic) — modelo `claude-sonnet-4-20250514`
+- **NLP:** Classificador clássico baseado em regex (sem dependência de API)
+- **PDF:** PyMuPDF (fitz)
+- **Deploy:** Vercel (frontend) + Railway (backend)
+- **Docker:** docker-compose com Nginx reverse proxy
+
+## Funcionalidades
+
+- Classificação via texto colado ou upload de arquivo `.txt` / `.pdf`
+- Dois providers de classificação: **Claude (IA)** e **Clássico (NLP)** — alternável pela interface
+- 8 tags de categorização: `SPAM`, `POSSÍVEL GOLPE`, `URGENTE`, `SOLICITAÇÃO`, `RECLAMAÇÃO`, `REUNIÃO`, `INFORMATIVO`, `NÃO IMPORTANTE`
+- Histórico de classificações com busca e filtros
+- Estatísticas de uso (cards + barra de resumo)
+- Exportação de resultados
+- Dark mode
 
 ## Pré-requisitos
 
@@ -28,50 +41,109 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
-O backend estará disponível em `http://localhost:8000`. Documentação da API em `http://localhost:8000/docs`.
+Disponível em `http://localhost:8000`. Documentação interativa em `http://localhost:8000/docs`.
 
 ### Frontend
 
 ```bash
 cd frontend
+cp .env.example .env
+# VITE_API_URL=http://localhost:8000 (já configurado no .env.example)
+
 npm install
 npm run dev
 ```
 
-O frontend estará disponível em `http://localhost:5173`.
+Disponível em `http://localhost:5173`.
 
-## Uso
+### Docker (alternativa)
 
-1. Acesse `http://localhost:5173`
-2. Cole o texto de um email ou faça upload de um arquivo `.txt` / `.pdf`
-3. Clique em "Classificar Email"
-4. Veja a classificação (Produtivo/Improdutivo), o resumo e a resposta sugerida
+```bash
+docker compose up --build
+```
+
+## Variáveis de Ambiente
+
+### Backend (`backend/.env`)
+
+| Variável | Descrição | Padrão |
+|----------|-----------|--------|
+| `ANTHROPIC_API_KEY` | Chave da API Anthropic | — |
+| `ALLOWED_ORIGINS` | URLs permitidas no CORS | `http://localhost:5173,http://localhost:3000` |
+| `AI_MODEL` | Modelo Claude a usar | `claude-sonnet-4-20250514` |
+
+### Frontend (`frontend/.env`)
+
+| Variável | Descrição | Padrão |
+|----------|-----------|--------|
+| `VITE_API_URL` | URL base do backend | `""` (vazio = relativo) |
+
+> **Importante:** `VITE_API_URL` é embutida no bundle em build time. Em produção, configure a variável no painel da Vercel **antes** do deploy.
+
+## API
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| `POST` | `/api/classify/text` | Classifica email via texto (`{ text, provider }`) |
+| `POST` | `/api/classify/file?provider=` | Classifica email via upload de arquivo |
+| `GET` | `/api/health` | Health check |
+
+**Providers disponíveis:** `claude` (padrão) \| `classic`
+
+## Testes
+
+```bash
+cd backend
+python -m pytest tests/ -v
+```
+
+18 testes cobrindo endpoints e lógica de classificação (pytest + httpx).
 
 ## Estrutura do Projeto
 
 ```
 ├── backend/
 │   ├── app/
-│   │   ├── main.py              # FastAPI app
-│   │   ├── config.py            # Configurações
-│   │   ├── api/routes/          # Endpoints da API
-│   │   ├── core/                # Interfaces e exceções
-│   │   ├── services/            # Lógica de negócio e IA
-│   │   ├── readers/             # Leitores de arquivos (txt, pdf)
-│   │   └── models/              # Schemas Pydantic
+│   │   ├── main.py                        # FastAPI app + CORS
+│   │   ├── config.py                      # pydantic-settings
+│   │   ├── api/routes/email_routes.py     # Endpoints REST
+│   │   ├── core/                          # interfaces.py, exceptions.py
+│   │   ├── services/
+│   │   │   ├── email_processor.py         # Facade: leitura → NLP → classificação → resposta
+│   │   │   ├── text_preprocessor.py       # Limpeza de texto
+│   │   │   ├── confidence_scorer.py       # Score de confiança
+│   │   │   └── classifier/
+│   │   │       ├── claude_classifier.py   # Provider IA (Claude)
+│   │   │       ├── classic_nlp_classifier.py  # Provider NLP (regex)
+│   │   │       └── factory.py             # Factory Method
+│   │   ├── readers/                       # txt_reader, pdf_reader, reader_factory
+│   │   └── models/schemas.py              # DTOs Pydantic
 │   ├── tests/
 │   └── requirements.txt
 ├── frontend/
 │   ├── src/
-│   │   ├── components/          # Componentes React
-│   │   ├── hooks/               # Custom hooks
-│   │   ├── services/            # Chamadas à API
-│   │   └── types/               # TypeScript interfaces
+│   │   ├── components/    # Header, EmailUploader, ResultCard, History, StatsCards, ...
+│   │   ├── hooks/         # useEmailClassifier.ts
+│   │   ├── services/      # api.ts (Axios)
+│   │   └── types/         # index.ts
 │   └── package.json
+├── docker-compose.yml
 └── README.md
 ```
 
 ## Deploy
 
-- **Frontend:** Vercel (apontar para pasta `frontend/`)
-- **Backend:** Railway (apontar para pasta `backend/`, variáveis: `ANTHROPIC_API_KEY`, `ALLOWED_ORIGINS`)
+### Vercel (Frontend)
+
+1. Aponte o projeto para a pasta `frontend/`
+2. Configure a variável de ambiente: `VITE_API_URL=https://<seu-backend>.up.railway.app`
+3. Faça o deploy — o Vite embutte a URL no bundle
+
+### Railway (Backend)
+
+Configure as variáveis de ambiente no painel:
+
+| Variável | Valor |
+|----------|-------|
+| `ANTHROPIC_API_KEY` | Sua chave da Anthropic |
+| `ALLOWED_ORIGINS` | URL do frontend na Vercel (ex: `https://seu-app.vercel.app`) |
