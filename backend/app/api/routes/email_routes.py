@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, UploadFile, File
+from fastapi import APIRouter, HTTPException, Query, UploadFile, File
 
 from app.core.exceptions import (
     ClassificationError,
@@ -16,8 +16,8 @@ router = APIRouter(prefix="/api", tags=["email"])
 ALLOWED_CONTENT_TYPES = {"text/plain", "application/pdf"}
 
 
-def _get_processor() -> EmailProcessorService:
-    classifier = ClassifierFactory.create("claude")
+def _get_processor(provider: str = "claude") -> EmailProcessorService:
+    classifier = ClassifierFactory.create(provider)
     preprocessor = TextPreprocessor()
     return EmailProcessorService(classifier, preprocessor)
 
@@ -30,7 +30,7 @@ async def health_check():
 @router.post("/classify/text", response_model=ClassificationResponse)
 async def classify_text(request: ClassifyTextRequest):
     """Classify email from raw text input."""
-    processor = _get_processor()
+    processor = _get_processor(request.provider)
     try:
         return await processor.process_text(request.text)
     except EmptyContentError as e:
@@ -40,7 +40,10 @@ async def classify_text(request: ClassifyTextRequest):
 
 
 @router.post("/classify/file", response_model=ClassificationResponse)
-async def classify_file(file: UploadFile = File(...)):
+async def classify_file(
+    file: UploadFile = File(...),
+    provider: str = Query("claude", description="Classifier provider: claude or classic"),
+):
     """Classify email from an uploaded .txt or .pdf file."""
     if file.content_type not in ALLOWED_CONTENT_TYPES:
         raise HTTPException(
@@ -48,7 +51,7 @@ async def classify_file(file: UploadFile = File(...)):
             detail=f"Unsupported file type: {file.content_type}. Allowed: .txt, .pdf",
         )
 
-    processor = _get_processor()
+    processor = _get_processor(provider)
     try:
         return await processor.process_file(file)
     except UnsupportedFileTypeError as e:

@@ -1,8 +1,11 @@
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 
 class ClassifyTextRequest(BaseModel):
     text: str = Field(..., min_length=10, description="Email text content to classify")
+    provider: Literal["claude", "classic"] = Field("claude", description="Classifier provider: claude or classic")
 
 
 class ClassificationResponse(BaseModel):
