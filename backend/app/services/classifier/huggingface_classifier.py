@@ -56,7 +56,7 @@ _RESPONSE_TEMPLATES: dict[str, str] = {
 }
 
 _CONFIDENCE_THRESHOLD = 0.4
-_HF_API_BASE = "https://router.huggingface.co/models"
+_HF_API_BASE = "https://router.huggingface.co/hf-inference/models"
 
 
 def _first_sentence(text: str, max_chars: int = 200) -> str:
@@ -123,10 +123,15 @@ class HuggingFaceClassifier(Classifier):
 
         try:
             data = response.json()
-            # Response is either a dict or a list wrapping a dict
-            result = data[0] if isinstance(data, list) else data
-            labels: list[str] = result["labels"]
-            scores: list[float] = result["scores"]
+            # New router format: [{label, score}, ...] (sorted by score desc)
+            # Legacy format: {labels: [...], scores: [...]} or wrapped in a list
+            if isinstance(data, list) and data and "label" in data[0]:
+                labels = [item["label"] for item in data]
+                scores = [item["score"] for item in data]
+            else:
+                result = data[0] if isinstance(data, list) else data
+                labels = result["labels"]
+                scores = result["scores"]
         except (KeyError, IndexError, TypeError) as e:
             logger.error("Unexpected HuggingFace response format: %s | body=%s", e, response.text[:300])
             raise ClassificationError("HuggingFace returned an unexpected response format.")
