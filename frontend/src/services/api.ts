@@ -1,6 +1,9 @@
 import axios from "axios";
 import type { ClassificationResponse, Provider } from "../types";
 
+console.log("[api] VITE_API_URL:", import.meta.env.VITE_API_URL);
+console.log("[api] baseURL:", import.meta.env.VITE_API_URL || "https://autouchallenge-production.up.railway.app");
+
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "https://autouchallenge-production.up.railway.app",
 });
