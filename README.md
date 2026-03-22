@@ -7,7 +7,7 @@ Aplicação web para classificação inteligente de emails do setor financeiro. 
 - **Backend:** Python 3.13 + FastAPI
 - **Frontend:** React 18 + TypeScript + Vite + Tailwind CSS v4
 - **IA:** Claude API (Anthropic) — modelo `claude-sonnet-4-20250514`
-- **NLP:** Classificador clássico baseado em regex (sem dependência de API)
+- **NLP:** HuggingFace Inference API — modelo `MoritzLaurer/mDeBERTa-v3-base-mnli-xnli` (zero-shot, multilíngue) e classificador clássico baseado em regex (sem dependência de API)
 - **PDF:** PyMuPDF (fitz)
 - **Deploy:** Vercel (frontend) + Railway (backend)
 - **Docker:** docker-compose com Nginx reverse proxy
@@ -15,7 +15,7 @@ Aplicação web para classificação inteligente de emails do setor financeiro. 
 ## Funcionalidades
 
 - Classificação via texto colado ou upload de arquivo `.txt` / `.pdf`
-- Dois providers de classificação: **Claude (IA)** e **Clássico (NLP)** — alternável pela interface
+- Três providers de classificação: **Claude (IA)**, **HuggingFace (zero-shot)** e **Clássico (NLP)** — alternável pela interface
 - 8 tags de categorização: `SPAM`, `POSSÍVEL GOLPE`, `URGENTE`, `SOLICITAÇÃO`, `RECLAMAÇÃO`, `REUNIÃO`, `INFORMATIVO`, `NÃO IMPORTANTE`
 - Histórico de classificações com busca e filtros
 - Estatísticas de uso (cards + barra de resumo)
@@ -27,6 +27,7 @@ Aplicação web para classificação inteligente de emails do setor financeiro. 
 - Python 3.13+
 - Node.js 18+
 - Chave de API da Anthropic ([console.anthropic.com](https://console.anthropic.com))
+- Token da HuggingFace ([huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)) — necessário para o provider HuggingFace
 
 ## Executando Localmente
 
@@ -35,7 +36,7 @@ Aplicação web para classificação inteligente de emails do setor financeiro. 
 ```bash
 cd backend
 cp .env.example .env
-# Edite o .env com sua ANTHROPIC_API_KEY
+# Edite o .env com sua ANTHROPIC_API_KEY e HF_TOKEN
 
 pip install -r requirements.txt
 uvicorn app.main:app --reload
@@ -71,6 +72,8 @@ docker compose up --build
 | `ANTHROPIC_API_KEY` | Chave da API Anthropic | — |
 | `ALLOWED_ORIGINS` | URLs permitidas no CORS | `http://localhost:5173,http://localhost:3000` |
 | `AI_MODEL` | Modelo Claude a usar | `claude-sonnet-4-20250514` |
+| `HF_TOKEN` | Token da HuggingFace (Inference API) | — |
+| `HF_MODEL` | Modelo HuggingFace para zero-shot | `MoritzLaurer/mDeBERTa-v3-base-mnli-xnli` |
 
 ### Frontend (`frontend/.env`)
 
@@ -88,7 +91,7 @@ docker compose up --build
 | `POST` | `/api/classify/file?provider=` | Classifica email via upload de arquivo |
 | `GET` | `/api/health` | Health check |
 
-**Providers disponíveis:** `claude` (padrão) \| `classic`
+**Providers disponíveis:** `claude` (padrão) \| `huggingface` \| `classic`
 
 ## Testes
 
@@ -113,9 +116,10 @@ python -m pytest tests/ -v
 │   │   │   ├── text_preprocessor.py       # Limpeza de texto
 │   │   │   ├── confidence_scorer.py       # Score de confiança
 │   │   │   └── classifier/
-│   │   │       ├── claude_classifier.py   # Provider IA (Claude)
+│   │   │       ├── claude_classifier.py       # Provider IA (Claude)
+│   │   │       ├── huggingface_classifier.py  # Provider HuggingFace (zero-shot)
 │   │   │       ├── classic_nlp_classifier.py  # Provider NLP (regex)
-│   │   │       └── factory.py             # Factory Method
+│   │   │       └── factory.py                 # Factory Method
 │   │   ├── readers/                       # txt_reader, pdf_reader, reader_factory
 │   │   └── models/schemas.py              # DTOs Pydantic
 │   ├── tests/
@@ -147,3 +151,5 @@ Configure as variáveis de ambiente no painel:
 |----------|-------|
 | `ANTHROPIC_API_KEY` | Sua chave da Anthropic |
 | `ALLOWED_ORIGINS` | URL do frontend na Vercel (ex: `https://seu-app.vercel.app`) |
+| `HF_TOKEN` | Seu token da HuggingFace |
+| `HF_MODEL` | `MoritzLaurer/mDeBERTa-v3-base-mnli-xnli` |
