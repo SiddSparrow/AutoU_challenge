@@ -105,12 +105,16 @@ class HuggingFaceClassifier(Classifier):
             logger.error("HuggingFace request error: %s", e)
             raise ClassificationError(f"Could not reach HuggingFace API: {e}")
 
-        if response.status_code == 503:
-            body = response.json()
-            estimated = body.get("estimated_time", "unknown")
-            logger.warning("HuggingFace model loading | estimated_time=%s", estimated)
+        if response.status_code in (502, 503):
+            estimated = 20
+            try:
+                body = response.json()
+                estimated = int(float(body.get("estimated_time", 20)))
+            except Exception:
+                pass
+            logger.warning("HuggingFace model unavailable | status=%d | estimated=%ss", response.status_code, estimated)
             raise ClassificationError(
-                f"O modelo HuggingFace está carregando. Tente novamente em ~{int(float(estimated) if estimated != 'unknown' else 20)}s."
+                f"O modelo HuggingFace está carregando ou indisponível. Tente novamente em ~{estimated}s."
             )
 
         if response.status_code != 200:

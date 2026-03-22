@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     allowed_origins: str = "http://localhost:5173,http://localhost:3000"
     ai_model: str = "claude-sonnet-4-20250514"
     hf_token: str = ""
-    hf_model: str = "joeddav/xlm-roberta-large-xnli"
+    hf_model: str = "MoritzLaurer/deberta-v3-small-zeroshot-v1.1-all-33"
 
     @property
     def cors_origins(self) -> list[str]:
