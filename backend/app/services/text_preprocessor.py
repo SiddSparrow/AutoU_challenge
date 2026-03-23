@@ -4,16 +4,17 @@ import re
 class TextPreprocessor:
     """Preprocesses email text for classification using NLP techniques."""
 
-    # Common email header patterns
+    # Common email header patterns (English and Portuguese)
     _HEADER_PATTERNS = [
         r"^(From|To|Cc|Bcc|Subject|Date|Sent|Received):\s*.*$",
+        r"^(De|Para|Assunto|Data|Cc|Cco|Enviado em):\s*.*$",
         r"^-{2,}\s*(Original Message|Forwarded message|Mensagem original)\s*-{2,}$",
     ]
 
     # Email signature indicators
     _SIGNATURE_INDICATORS = [
         r"^--\s*$",
-        r"^(Atenciosamente|Att\.|Cordialmente|Best regards|Regards|Sincerely)",
+        r"^(Atenciosamente|Att\.|Cordialmente|Abraço|Abraços|Best regards|Regards|Sincerely)",
         r"^(Enviado do meu|Sent from my)",
     ]
 
