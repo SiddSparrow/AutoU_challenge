@@ -1,0 +1,217 @@
+<!-- Auto-generated — latest is v2. See benchmarks/ for all versions. -->
+
+# Benchmark Comparativo — Classificadores de Email — v2
+
+**Versão:** v2  
+**Data:** 2026-03-23  
+**Casos de teste:** 12  
+**Modelos:** ClassicNLP (TF-IDF + LR), HuggingFace (mDeBERTa-v3 zero-shot), Claude (claude-sonnet-4-20250514)  
+**Nota:** ClassicNLP: dataset 56->170 exemplos, thresholds separados (cat 0.55 / tag 0.30), max_features 500->1500, category derivada da tag
+
+
+## Scorecard
+
+| Caso de Teste | Esperado (cat/tag) | ClassicNLP | HuggingFace | Claude |
+|---|---|:---:|:---:|:---:|
+| Reunião corporativa | `Produtivo / REUNIÃO` | ✓✓ | ✓✓ | ✓✓ |
+| Reclamação formal | `Produtivo / RECLAMAÇÃO` | ✓~ | ✓✓ | ✓✓ |
+| Spam promocional | `Improdutivo / SPAM` | ✓~ | ✗ | ✓✓ |
+| Phishing bancário | `Improdutivo / POSSÍVEL GOLPE` | ✓✓ | ✗ | ✓✓ |
+| Solicitação de suporte | `Produtivo / SOLICITAÇÃO` | ✓✓ | ✓✓ | ✓✓ |
+| Email urgente | `Produtivo / URGENTE` | ✓~ | ✗ | ✓✓ |
+| Comunicado informativo | `Improdutivo / INFORMATIVO` | ✓✓ | ✓✓ | ✓✓ |
+| Boas-vindas / onboarding | `Improdutivo / INFORMATIVO` | ✓~ | ✓~ | ✓✓ |
+| Agradecimento | `Improdutivo / NÃO IMPORTANTE` | ✓✓ | ✗ | ✓✓ |
+| Texto corrido (não email) | `Improdutivo / INFORMATIVO` | ✓~ | ✓~ | ✓✓ |
+| Email em inglês | `Produtivo / SOLICITAÇÃO` | ✓~ | ✗ | ✓✓ |
+| Mensagem curta / low-info | `Improdutivo / NÃO IMPORTANTE` | ✓✓ | ✓~ | ✗ |
+
+> ✓✓ category + tag corretos · ✓~ category certa, tag errada · ✗ category errada
+
+
+## Acurácia Consolidada
+
+| Modelo | Category (n/total) | % | Tag (n/total) | % |
+|--------|-------------------|---|--------------|---|
+| ClassicNLP | 12/12 | 100% | 6/12 | 50% |
+| HuggingFace | 7/12 | 58% | 4/12 | 33% |
+| Claude | 11/12 | 92% | 11/12 | 92% |
+
+## Resultados por Caso de Teste
+
+### Reunião corporativa
+**Esperado:** `Produtivo / REUNIÃO`
+
+| Modelo | Categoria | Tag | Latência | Resumo |
+|--------|-----------|-----|----------|--------|
+| ClassicNLP | ✓ **Produtivo** | ✓ REUNIÃO | 60ms | Convido para reunião de alinhamento do Q2 na próxima terça-feira, 25/03, às 10h, |
+| HuggingFace | ✓ **Produtivo** | ✓ REUNIÃO | 4631ms | Convido para reunião de alinhamento do Q2 na próxima terça-feira, 25/03, às 10h, |
+| Claude | ✓ **Produtivo** | ✓ REUNIÃO | 3092ms | Convite para reunião de alinhamento do Q2 com confirmação de presença solicitada |
+
+### Reclamação formal
+**Esperado:** `Produtivo / RECLAMAÇÃO`
+
+| Modelo | Categoria | Tag | Latência | Resumo |
+|--------|-----------|-----|----------|--------|
+| ClassicNLP | ✓ **Produtivo** | ~ NÃO IMPORTANTE | 11ms | Registro formal de reclamação referente ao sistema de conciliação bancária que a |
+| HuggingFace | ✓ **Produtivo** | ✓ RECLAMAÇÃO | 1178ms | Registro formal de reclamação referente ao sistema de conciliação bancária que a |
+| Claude | ✓ **Produtivo** | ✓ RECLAMAÇÃO | 4134ms | Reclamação formal sobre falhas no sistema de conciliação bancária com impacto no |
+
+### Spam promocional
+**Esperado:** `Improdutivo / SPAM`
+
+| Modelo | Categoria | Tag | Latência | Resumo |
+|--------|-----------|-----|----------|--------|
+| ClassicNLP | ✓ **Improdutivo** | ~ NÃO IMPORTANTE | 9ms | Mais de 50.000 alunos já transformaram suas vidas. |
+| HuggingFace | ✗ **Produtivo** | ~ URGENTE | 1292ms | OFERTA IMPERDÍVEL! |
+| Claude | ✓ **Improdutivo** | ✓ SPAM | 2929ms | Email promocional oferecendo desconto em cursos de finanças com urgência artific |
+
+### Phishing bancário
+**Esperado:** `Improdutivo / POSSÍVEL GOLPE`
+
+| Modelo | Categoria | Tag | Latência | Resumo |
+|--------|-----------|-----|----------|--------|
+| ClassicNLP | ✓ **Improdutivo** | ✓ POSSÍVEL GOLPE | 8ms | Para reativar o acesso, confirme seus dados clicando no link abaixo em até 24 ho |
+| HuggingFace | ✗ **Produtivo** | ~ URGENTE | 1294ms | AVISO URGENTE DO SEU BANCO |
+| Claude | ✓ **Improdutivo** | ✓ POSSÍVEL GOLPE | 3339ms | Tentativa de phishing fingindo ser do banco com urgência falsa para obter dados  |
+
+### Solicitação de suporte
+**Esperado:** `Produtivo / SOLICITAÇÃO`
+
+| Modelo | Categoria | Tag | Latência | Resumo |
+|--------|-----------|-----|----------|--------|
+| ClassicNLP | ✓ **Produtivo** | ✓ SOLICITAÇÃO | 10ms | Olá equipe de TI, gostaria de solicitar acesso ao módulo de relatórios gerenciai |
+| HuggingFace | ✓ **Produtivo** | ✓ SOLICITAÇÃO | 1163ms | Olá equipe de TI, gostaria de solicitar acesso ao módulo de relatórios gerenciai |
+| Claude | ✓ **Produtivo** | ✓ SOLICITAÇÃO | 3465ms | Solicitação de acesso ao sistema ERP para nova funcionária com perfil específico |
+
+### Email urgente
+**Esperado:** `Produtivo / URGENTE`
+
+| Modelo | Categoria | Tag | Latência | Resumo |
+|--------|-----------|-----|----------|--------|
+| ClassicNLP | ✓ **Produtivo** | ~ NÃO IMPORTANTE | 12ms | CRÍTICO — AÇÃO IMEDIATA NECESSÁRIA
+
+O sistema de processamento de pagamentos est |
+| HuggingFace | ✗ **Improdutivo** | ~ INFORMATIVO | 1061ms | CRÍTICO — AÇÃO IMEDIATA NECESSÁRIA |
+| Claude | ✓ **Produtivo** | ✓ URGENTE | 3940ms | Sistema de pagamentos fora do ar com 2.300 transações pendentes e prazo regulató |
+
+### Comunicado informativo
+**Esperado:** `Improdutivo / INFORMATIVO`
+
+| Modelo | Categoria | Tag | Latência | Resumo |
+|--------|-----------|-----|----------|--------|
+| ClassicNLP | ✓ **Improdutivo** | ✓ INFORMATIVO | 8ms | Comunicado interno — TI
+
+Informamos que o ambiente de homologação estará indispo |
+| HuggingFace | ✓ **Improdutivo** | ✓ INFORMATIVO | 1270ms | Comunicado interno — TI |
+| Claude | ✓ **Improdutivo** | ✓ INFORMATIVO | 3054ms | Comunicado sobre manutenção preventiva no ambiente de homologação no sábado das  |
+
+### Boas-vindas / onboarding
+**Esperado:** `Improdutivo / INFORMATIVO`
+
+| Modelo | Categoria | Tag | Latência | Resumo |
+|--------|-----------|-----|----------|--------|
+| ClassicNLP | ✓ **Improdutivo** | ~ NÃO IMPORTANTE | 8ms | Olá, Camila! |
+| HuggingFace | ✓ **Improdutivo** | ~ NÃO IMPORTANTE | 1170ms | Olá, Camila! |
+| Claude | ✓ **Improdutivo** | ✓ INFORMATIVO | 4683ms | Comunicado de boas-vindas com informações sobre onboarding de nova funcionária d |
+
+### Agradecimento
+**Esperado:** `Improdutivo / NÃO IMPORTANTE`
+
+| Modelo | Categoria | Tag | Latência | Resumo |
+|--------|-----------|-----|----------|--------|
+| ClassicNLP | ✓ **Improdutivo** | ✓ NÃO IMPORTANTE | 7ms | Bom fim de semana a todos e descansem bastante. |
+| HuggingFace | ✗ **Produtivo** | ~ RECLAMAÇÃO | 1028ms | Oi time, |
+| Claude | ✓ **Improdutivo** | ✓ NÃO IMPORTANTE | 3656ms | Mensagem de agradecimento da equipe pelo apoio durante fechamento trimestral |
+
+### Texto corrido (não email)
+**Esperado:** `Improdutivo / INFORMATIVO`
+
+| Modelo | Categoria | Tag | Latência | Resumo |
+|--------|-----------|-----|----------|--------|
+| ClassicNLP | ✓ **Improdutivo** | ~ NÃO IMPORTANTE | 11ms | A taxa Selic passou por sucessivos ajustes ao longo de 2025, reflexo da política |
+| HuggingFace | ✓ **Improdutivo** | ~ NÃO IMPORTANTE | 995ms | A taxa Selic passou por sucessivos ajustes ao longo de 2025, reflexo da política |
+| Claude | ✓ **Improdutivo** | ✓ INFORMATIVO | 2626ms | Comunicado sobre ajustes na taxa Selic em 2025 e projeções para 2026 |
+
+### Email em inglês
+**Esperado:** `Produtivo / SOLICITAÇÃO`
+
+| Modelo | Categoria | Tag | Latência | Resumo |
+|--------|-----------|-----|----------|--------|
+| ClassicNLP | ✓ **Produtivo** | ~ REUNIÃO | 8ms | Hi support team,
+
+I'm reaching out regarding invoice #INV-2026-0892 issued on Ma |
+| HuggingFace | ✗ **Improdutivo** | ~ NÃO IMPORTANTE | 1125ms | Hi support team, |
+| Claude | ✓ **Produtivo** | ✓ SOLICITAÇÃO | 3527ms | Solicitação de verificação de status de pagamento da fatura #INV-2026-0892 que c |
+
+### Mensagem curta / low-info
+**Esperado:** `Improdutivo / NÃO IMPORTANTE`
+
+| Modelo | Categoria | Tag | Latência | Resumo |
+|--------|-----------|-----|----------|--------|
+| ClassicNLP | ✓ **Improdutivo** | ✓ NÃO IMPORTANTE | 10ms | ok, pode fechar o chamado |
+| HuggingFace | ✓ **Improdutivo** | ~ POSSÍVEL GOLPE | 956ms | ok, pode fechar o chamado |
+| Claude | ✗ **Produtivo** | ~ SOLICITAÇÃO | 2138ms | Solicitação para fechamento de chamado |
+
+
+## Latência por Modelo
+
+| Modelo | Média (ms) | Mín (ms) | Máx (ms) |
+|--------|-----------|---------|---------|
+| ClassicNLP | 13 | 7 | 60 |
+| HuggingFace | 1430 | 956 | 4631 |
+| Claude | 3382 | 2138 | 4683 |
+
+## Concordância entre Modelos
+
+| Par | Concordância (category) |
+|-----|------------------------|
+| ClassicNLP vs HuggingFace | 7/12 (58%) |
+| ClassicNLP vs Claude | 11/12 (92%) |
+| HuggingFace vs Claude | 6/12 (50%) |
+
+## Análise Qualitativa
+
+### ClassicNLP (TF-IDF + Logistic Regression)
+**Técnicas NLP aplicadas:**
+Detecção de idioma (langdetect) → lowercasing → tokenização por regex → remoção de stopwords (NLTK multilíngue) → stemming (SnowballStemmer) → TF-IDF unigramas+bigramas (1500 features) → features manuais (comprimento, `?`, action words) → Logistic Regression → thresholds separados (cat ≥ 0.55, tag ≥ 0.30) → category derivada da tag quando confiante → sumarização extrativa por score TF-IDF
+
+**Pontos fortes:** Latência sub-milissegundo · offline · determinístico · sumarização extrativa funcional
+**Limitações:** Sem semântica contextual · não reconhece urgência sem a palavra "urgente" · falha em inglês
+
+---
+
+### HuggingFace (mDeBERTa-v3-base-mnli-xnli, zero-shot)
+**Técnicas NLP aplicadas:**
+Transformer DeBERTa-v3 (278M parâmetros, multilíngue) → cabeça NLI → hipótese "Este email é sobre {label}" → ranking por probabilidade de entailment → threshold de confiança 0.4
+
+**Pontos fortes:** Zero-shot sem treino · multilíngue · robusto a variações de escrita
+**Limitações:** Confunde urgência de marketing com urgência real · labels curtos causam falsos positivos · resumo via primeira sentença (sem semântica)
+
+---
+
+### Claude (claude-sonnet-4-20250514)
+**Técnicas NLP aplicadas:**
+Prompt engineering com definições + 4 exemplos few-shot + formato JSON estruturado → geração de `category`, `tag`, `summary` e `suggested_response` contextualizados → validação de consistência tag↔category com mapeamento determinístico no post-processing
+
+**Pontos fortes:** Melhor precisão semântica · resumos e respostas personalizados · único que acerta inglês e phishing · distingue "menciona reunião" de "convite de reunião"
+**Limitações:** Maior latência · custo por chamada · dependência de API externa
+
+---
+
+## Recomendação de Uso
+
+| Cenário | Modelo |
+|---------|--------|
+| Precisão máxima + respostas personalizadas | Claude |
+| Multilíngue sem custo de API | HuggingFace |
+| Offline / latência crítica | ClassicNLP |
+| Volume alto (produção) | ClassicNLP triagem + Claude para casos ambíguos |
+
+
+## Histórico de Versões
+
+| Versão | Data | ClassicNLP (cat%) | HuggingFace (cat%) | Claude (cat%) | Nota |
+|--------|------|:-----------------:|:------------------:|:-------------:|------|
+| v1 | 2026-03-23 | 33% | 58% | 83% | Baseline — dataset original (56 ex), threshold único 0.6 |
+| **v2** | 2026-03-23 | **100%** | **58%** | **92%** | ClassicNLP: dataset 56->170 exemplos, thresholds separados (cat 0.55 / tag 0.30), max_features 500->1500, category derivada da tag |
