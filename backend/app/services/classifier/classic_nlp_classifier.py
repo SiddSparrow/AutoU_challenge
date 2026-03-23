@@ -289,6 +289,16 @@ _TRAINING_DATA: list[tuple[str, str, str]] = [
     ("recebido obrigado", "Improdutivo", "NÃO IMPORTANTE"),
     ("certo entendido vou verificar depois", "Improdutivo", "NÃO IMPORTANTE"),
     ("boa tarde tudo bem por aí", "Improdutivo", "NÃO IMPORTANTE"),
+
+    # --- English examples (one per tag for cross-lingual coverage) ---
+    ("Hi support team, could you please check the status of invoice #892? Payment was sent last week but still shows pending.", "Produtivo", "SOLICITAÇÃO"),
+    ("URGENT: production server is down since 3pm. All transactions are failing. We need immediate action from the infrastructure team.", "Produtivo", "URGENTE"),
+    ("I am formally complaining about the repeated service outages this month. This is unacceptable and I demand a resolution.", "Produtivo", "RECLAMAÇÃO"),
+    ("Could we schedule a call this week to discuss the Q2 results? I suggest Thursday at 2pm.", "Produtivo", "REUNIÃO"),
+    ("Exclusive offer! Get 60% off all financial management tools today only. Click here to claim your discount now!", "Improdutivo", "SPAM"),
+    ("WARNING: your account has been suspended. Click the link below to verify your credentials immediately or your account will be closed.", "Improdutivo", "POSSÍVEL GOLPE"),
+    ("Please be informed that the system will undergo scheduled maintenance on Saturday from 2am to 6am. No action required.", "Improdutivo", "INFORMATIVO"),
+    ("Thank you so much for your help yesterday. It was a pleasure working with such a dedicated team. Have a great weekend!", "Improdutivo", "NÃO IMPORTANTE"),
 ]
 
 

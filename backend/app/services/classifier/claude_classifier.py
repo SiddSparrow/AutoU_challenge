@@ -55,7 +55,10 @@ Email: "PARABÉNS!!! Você foi selecionado para receber R$5.000. Clique AGORA em
 Resposta: {"category": "Improdutivo", "tag": "POSSÍVEL GOLPE", "summary": "Mensagem fraudulenta prometendo prêmio mediante clique em link suspeito", "suggested_response": "Este email apresenta características de golpe (phishing). Recomendamos não clicar em nenhum link e deletar a mensagem imediatamente."}
 
 Email: "Obrigado pelo atendimento de ontem, aliás, você pode reenviar o contrato?"
-Resposta: {"category": "Produtivo", "tag": "SOLICITAÇÃO", "summary": "Solicitação de reenvio de contrato com agradecimento pelo atendimento", "suggested_response": "Prezado(a), obrigado pelo retorno! Segue o contrato em anexo conforme solicitado. Qualquer dúvida, estou à disposição."}"""
+Resposta: {"category": "Produtivo", "tag": "SOLICITAÇÃO", "summary": "Solicitação de reenvio de contrato com agradecimento pelo atendimento", "suggested_response": "Prezado(a), obrigado pelo retorno! Segue o contrato em anexo conforme solicitado. Qualquer dúvida, estou à disposição."}
+
+Email: "ok, pode fechar o chamado"
+Resposta: {"category": "Improdutivo", "tag": "NÃO IMPORTANTE", "summary": "Confirmação para encerramento de chamado sem solicitação adicional", "suggested_response": "Chamado encerrado conforme solicitado. Fico à disposição para qualquer outra necessidade."}"""
 
 
 class ClaudeClassifier(Classifier):

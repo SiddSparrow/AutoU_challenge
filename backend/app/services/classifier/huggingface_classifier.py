@@ -9,16 +9,22 @@ from app.core.interfaces import ClassificationResult, Classifier
 
 logger = logging.getLogger(__name__)
 
-_TAGS: list[str] = [
-    "SPAM",
-    "POSSÍVEL GOLPE",
-    "URGENTE",
-    "SOLICITAÇÃO",
-    "RECLAMAÇÃO",
-    "REUNIÃO",
-    "INFORMATIVO",
-    "NÃO IMPORTANTE",
-]
+# Human-readable labels sent to the NLI model — more descriptive than raw tag names,
+# which prevents the model from matching on isolated words (e.g. "URGENTE" in spam).
+_TAG_LABELS: dict[str, str] = {
+    "SPAM":            "email promocional, newsletter ou publicidade não solicitada",
+    "POSSÍVEL GOLPE":  "tentativa de phishing, fraude ou golpe solicitando dados pessoais ou credenciais",
+    "URGENTE":         "urgência real de negócio com prazo crítico e consequências imediatas",
+    "SOLICITAÇÃO":     "pedido de suporte, informação ou serviço corporativo",
+    "RECLAMAÇÃO":      "reclamação formal ou manifestação de insatisfação com produto ou serviço",
+    "REUNIÃO":         "convite, agendamento ou confirmação de reunião específica",
+    "INFORMATIVO":     "comunicado informativo corporativo sem necessidade de ação ou resposta",
+    "NÃO IMPORTANTE":  "agradecimento genérico, felicitação ou mensagem sem ação necessária",
+}
+
+_TAGS: list[str] = list(_TAG_LABELS.keys())
+_LABELS: list[str] = list(_TAG_LABELS.values())
+_LABEL_TO_TAG: dict[str, str] = {v: k for k, v in _TAG_LABELS.items()}
 
 _TAG_TO_CATEGORY: dict[str, str] = {
     "SPAM": "Improdutivo",
@@ -93,7 +99,8 @@ class HuggingFaceClassifier(Classifier):
         payload = {
             "inputs": text,
             "parameters": {
-                "candidate_labels": _TAGS,
+                "candidate_labels": _LABELS,
+                "hypothesis_template": "O propósito principal deste email corporativo é {}.",
                 "multi_label": False,
             },
         }
@@ -136,10 +143,11 @@ class HuggingFaceClassifier(Classifier):
             logger.error("Unexpected HuggingFace response format: %s | body=%s", e, response.text[:300])
             raise ClassificationError("HuggingFace returned an unexpected response format.")
 
-        top_tag = labels[0]
+        top_label = labels[0]
         top_score = scores[0]
+        top_tag = _LABEL_TO_TAG.get(top_label, top_label)
 
-        logger.info("HF result | top_tag=%s | score=%.3f", top_tag, top_score)
+        logger.info("HF result | top_label=%s | top_tag=%s | score=%.3f", top_label, top_tag, top_score)
 
         if top_score < _CONFIDENCE_THRESHOLD:
             logger.info("Low confidence (%.3f) — fallback to NÃO IMPORTANTE", top_score)
