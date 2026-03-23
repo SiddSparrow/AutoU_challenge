@@ -7,8 +7,20 @@ import {
   HiOutlineCheckCircle,
   HiOutlineXCircle,
 } from "react-icons/hi";
-import type { HistoryEntry } from "../types";
+import type { HistoryEntry, Provider } from "../types";
 import { getTagStyle } from "../utils/tagStyles";
+
+const PROVIDER_LABELS: Record<Provider, string> = {
+  claude: "Claude AI",
+  classic: "Clássico",
+  huggingface: "HuggingFace",
+};
+
+const PROVIDER_STYLES: Record<Provider, string> = {
+  claude: "bg-violet-500/10 text-violet-400 border-violet-500/20",
+  classic: "bg-sky-500/10 text-sky-400 border-sky-500/20",
+  huggingface: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+};
 
 interface Props {
   history: HistoryEntry[];
@@ -18,10 +30,13 @@ interface Props {
 
 export function History({ history, onClear, onSelect }: Props) {
   const [expanded, setExpanded] = useState(false);
+  const [providerFilter, setProviderFilter] = useState<Provider | "all">("all");
+
+  const providers = Array.from(new Set(history.map((e) => e.provider))) as Provider[];
+  const filtered = providerFilter === "all" ? history : history.filter((e) => e.provider === providerFilter);
 
   //if (history.length === 0) return null;
 
-  const displayed = expanded ? history : history.slice(0, 3);
 
   return (
     history.length === 0 ? (
@@ -43,7 +58,7 @@ export function History({ history, onClear, onSelect }: Props) {
         <h3 className="text-xs font-medium text-zinc-400 uppercase tracking-widest flex items-center gap-2">
           <HiOutlineClock className="text-sm" />
           Histórico
-          <span className="text-zinc-600">({history.length})</span>
+          <span className="text-zinc-600">({filtered.length})</span>
         </h3>
         <button
           onClick={onClear}
@@ -54,8 +69,36 @@ export function History({ history, onClear, onSelect }: Props) {
         </button>
       </div>
 
+      {providers.length > 0 && (
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <button
+            onClick={() => setProviderFilter("all")}
+            className={`px-2.5 py-1 rounded-md text-xs font-medium border transition-all duration-200 ${
+              providerFilter === "all"
+                ? "bg-zinc-700/60 text-zinc-200 border-zinc-600"
+                : "text-zinc-500 border-transparent hover:border-zinc-700 hover:text-zinc-300"
+            }`}
+          >
+            Todos
+          </button>
+          {providers.map((p) => (
+            <button
+              key={p}
+              onClick={() => setProviderFilter(p)}
+              className={`px-2.5 py-1 rounded-md text-xs font-medium border transition-all duration-200 ${
+                providerFilter === p
+                  ? PROVIDER_STYLES[p]
+                  : "text-zinc-500 border-transparent hover:border-zinc-700 hover:text-zinc-300"
+              }`}
+            >
+              {PROVIDER_LABELS[p]}
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="space-y-0.5">
-        {displayed.map((entry) => (
+        {(expanded ? filtered : filtered.slice(0, 3)).map((entry) => (
           <button
             key={entry.id}
             onClick={() => onSelect(entry)}
@@ -98,6 +141,10 @@ export function History({ history, onClear, onSelect }: Props) {
                     );
                   })()}
                   <span className="text-xs text-zinc-700">&middot;</span>
+                  <span className={`text-xs px-1.5 py-0.5 rounded border font-medium ${PROVIDER_STYLES[entry.provider]}`}>
+                    {PROVIDER_LABELS[entry.provider]}
+                  </span>
+                  <span className="text-xs text-zinc-700">&middot;</span>
                   <span className="text-xs text-zinc-600">
                     {new Date(entry.timestamp).toLocaleDateString("pt-BR", {
                       day: "2-digit",
@@ -113,7 +160,7 @@ export function History({ history, onClear, onSelect }: Props) {
         ))}
       </div>
 
-      {history.length > 3 && (
+      {filtered.length > 3 && (
         <button
           onClick={() => setExpanded(!expanded)}
           className="w-full flex items-center justify-center gap-1 py-1.5 text-xs text-zinc-500 hover:text-zinc-300 transition-all duration-200"
@@ -126,7 +173,7 @@ export function History({ history, onClear, onSelect }: Props) {
           ) : (
             <>
               <HiOutlineChevronDown className="text-sm" />
-              Ver todos ({history.length})
+              Ver todos ({filtered.length})
             </>
           )}
         </button>

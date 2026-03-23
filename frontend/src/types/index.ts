@@ -21,6 +21,7 @@ export interface ClassificationResponse {
 export interface HistoryEntry extends ClassificationResponse {
   id: string;
   timestamp: string;
+  provider: Provider;
 }
 
 export type InputMode = "text" | "file";

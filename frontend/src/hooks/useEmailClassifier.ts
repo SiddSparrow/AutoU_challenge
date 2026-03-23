@@ -3,7 +3,7 @@ import type { ClassificationResponse, Provider } from "../types";
 import { classifyText, classifyFile } from "../services/api";
 
 interface Options {
-  onSuccess?: (result: ClassificationResponse) => void;
+  onSuccess?: (result: ClassificationResponse, provider: Provider) => void;
 }
 
 export function useEmailClassifier(options?: Options) {
@@ -23,7 +23,7 @@ export function useEmailClassifier(options?: Options) {
     try {
       const data = await classifyText(text, provider);
       setResult(data);
-      options?.onSuccess?.(data);
+      options?.onSuccess?.(data, provider);
     } catch (err: unknown) {
       if (err && typeof err === "object" && "response" in err) {
         const axiosErr = err as { response?: { data?: { detail?: string } } };
@@ -45,7 +45,7 @@ export function useEmailClassifier(options?: Options) {
     try {
       const data = await classifyFile(file, provider);
       setResult(data);
-      options?.onSuccess?.(data);
+      options?.onSuccess?.(data, provider);
     } catch (err: unknown) {
       if (err && typeof err === "object" && "response" in err) {
         const axiosErr = err as { response?: { data?: { detail?: string } } };

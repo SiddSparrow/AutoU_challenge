@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import type { ClassificationResponse, HistoryEntry } from "../types";
+import type { ClassificationResponse, HistoryEntry, Provider } from "../types";
 
 const STORAGE_KEY = "email-classifier-history";
 const MAX_ENTRIES = 50;
@@ -20,11 +20,12 @@ function saveHistory(entries: HistoryEntry[]) {
 export function useClassificationHistory() {
   const [history, setHistory] = useState<HistoryEntry[]>(loadHistory);
 
-  const addEntry = useCallback((result: ClassificationResponse) => {
+  const addEntry = useCallback((result: ClassificationResponse, provider: Provider) => {
     const entry: HistoryEntry = {
       ...result,
       id: crypto.randomUUID(),
       timestamp: new Date().toISOString(),
+      provider,
     };
     setHistory((prev) => {
       const updated = [entry, ...prev].slice(0, MAX_ENTRIES);
