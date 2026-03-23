@@ -7,7 +7,8 @@ Aplicação web para classificação inteligente de emails do setor financeiro. 
 - **Backend:** Python 3.13 + FastAPI
 - **Frontend:** React 18 + TypeScript + Vite + Tailwind CSS v4
 - **IA:** Claude API (Anthropic) — modelo `claude-sonnet-4-20250514`
-- **NLP:** HuggingFace Inference API — modelo `MoritzLaurer/mDeBERTa-v3-base-mnli-xnli` (zero-shot, multilíngue) e classificador clássico baseado em regex (sem dependência de API)
+- **NLP clássico:** TF-IDF + Logistic Regression (scikit-learn) + SnowballStemmer (NLTK) — sem dependência de API
+- **Zero-shot:** HuggingFace Inference API — modelo `MoritzLaurer/mDeBERTa-v3-base-mnli-xnli` (multilíngue)
 - **PDF:** PyMuPDF (fitz)
 - **Deploy:** Vercel (frontend) + Railway (backend)
 - **Docker:** docker-compose com Nginx reverse proxy
@@ -15,12 +16,72 @@ Aplicação web para classificação inteligente de emails do setor financeiro. 
 ## Funcionalidades
 
 - Classificação via texto colado ou upload de arquivo `.txt` / `.pdf`
-- Três providers de classificação: **Claude (IA)**, **HuggingFace (zero-shot)** e **Clássico (NLP)** — alternável pela interface
+- Três providers de classificação alternáveis pela interface: **Claude**, **HuggingFace** e **ClassicNLP**
 - 8 tags de categorização: `SPAM`, `POSSÍVEL GOLPE`, `URGENTE`, `SOLICITAÇÃO`, `RECLAMAÇÃO`, `REUNIÃO`, `INFORMATIVO`, `NÃO IMPORTANTE`
 - Histórico de classificações com busca e filtros
 - Estatísticas de uso (cards + barra de resumo)
 - Exportação de resultados
 - Dark mode
+
+## Classificadores
+
+### Pré-processamento comum (`TextPreprocessor`)
+
+Aplicado a todos os providers antes da classificação:
+
+| Etapa | O que remove |
+|-------|-------------|
+| Remoção de headers | `De:`, `Para:`, `Assunto:`, `From:`, `To:`, `Subject:`, etc. |
+| Remoção de HTML | Tags `<...>` |
+| Remoção de URLs | Links `http://` e `www.` |
+| Remoção de assinatura | A partir de `Atenciosamente`, `Abraço`, `Regards`, `--`, etc. |
+| Normalização de espaços | Linhas em branco excessivas e espaços duplicados |
+
+### ClassicNLP — TF-IDF + Logistic Regression
+
+Pipeline local, sem chamadas de API:
+
+1. Detecção de idioma via stopwords (PT/EN) — ~0.1ms, sem dependência externa
+2. Lowercasing → tokenização → remoção de stopwords (NLTK) → stemming (SnowballStemmer)
+3. TF-IDF com unigramas e bigramas (1.500 features)
+4. Features manuais: comprimento normalizado, presença de `?`, action words
+5. Logistic Regression com thresholds separados (categoria ≥ 0.55 / tag ≥ 0.30)
+6. Category derivada deterministicamente da tag quando confiante
+7. Sumarização extrativa por score médio TF-IDF
+8. **Cache do modelo em disco** — init de 3.7s na primeira execução, 14ms nas seguintes
+
+Dataset de treino: 178 exemplos rotulados (~22/classe), PT + EN.
+
+### HuggingFace — mDeBERTa-v3 zero-shot
+
+Classificação via NLI (Natural Language Inference) sem fine-tuning:
+
+- Labels descritivos enviados ao modelo em vez de tags curtas — evita falsos positivos por palavras isoladas (ex: "URGENTE" em spam)
+- `hypothesis_template`: `"O propósito principal deste email corporativo é {}."`
+- Threshold de confiança: 0.4 → fallback para `NÃO IMPORTANTE`
+
+### Claude — claude-sonnet-4-20250514
+
+- System prompt com definições, 5 exemplos few-shot e formato JSON obrigatório
+- Validação de consistência tag↔categoria no post-processing com recovery automático
+- Gera resumo e resposta sugerida contextualizados ao conteúdo real do email
+
+## Benchmark (v3 — 12 casos de teste)
+
+| Modelo | Acurácia (category) | Latência média |
+|--------|:-------------------:|:--------------:|
+| ClassicNLP | **100%** (12/12) | ~14ms |
+| HuggingFace | **67%** (8/12) | ~1.6s |
+| Claude | **100%** (12/12) | ~3.2s |
+
+Resultados completos e histórico de versões em [`BENCHMARK.md`](BENCHMARK.md) e [`benchmarks/`](benchmarks/).
+
+Para rodar um novo benchmark:
+
+```bash
+cd backend
+python benchmark.py --note "descrição das mudanças"
+```
 
 ## Pré-requisitos
 
@@ -115,16 +176,16 @@ python -m pytest tests/ -v
 │   │   ├── core/                          # interfaces.py, exceptions.py
 │   │   ├── services/
 │   │   │   ├── email_processor.py         # Facade: leitura → NLP → classificação → resposta
-│   │   │   ├── text_preprocessor.py       # Limpeza de texto
-│   │   │   ├── confidence_scorer.py       # Score de confiança
+│   │   │   ├── text_preprocessor.py       # Limpeza de texto (headers, HTML, URLs, assinatura)
 │   │   │   └── classifier/
 │   │   │       ├── claude_classifier.py       # Provider IA (Claude)
-│   │   │       ├── huggingface_classifier.py  # Provider HuggingFace (zero-shot)
-│   │   │       ├── classic_nlp_classifier.py  # Provider NLP (regex)
+│   │   │       ├── huggingface_classifier.py  # Provider HuggingFace (zero-shot NLI)
+│   │   │       ├── classic_nlp_classifier.py  # Provider NLP (TF-IDF + LR)
 │   │   │       └── factory.py                 # Factory Method
 │   │   ├── readers/                       # txt_reader, pdf_reader, reader_factory
 │   │   └── models/schemas.py              # DTOs Pydantic
 │   ├── tests/
+│   ├── benchmark.py                       # Script de benchmark versionado
 │   └── requirements.txt
 ├── frontend/
 │   ├── src/
@@ -133,6 +194,8 @@ python -m pytest tests/ -v
 │   │   ├── services/      # api.ts (Axios)
 │   │   └── types/         # index.ts
 │   └── package.json
+├── benchmarks/            # Histórico de benchmarks versionados (v1, v2, v3...)
+├── BENCHMARK.md           # Benchmark mais recente
 ├── docker-compose.yml
 └── README.md
 ```
