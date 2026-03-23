@@ -104,28 +104,33 @@ class ClaudeClassifier(Classifier):
             data = json.loads(cleaned)
             logger.info("JSON parsed successfully | category=%s", data.get("category"))
 
+            tag_to_category = {
+                "URGENTE": "Produtivo",
+                "SOLICITAÇÃO": "Produtivo",
+                "RECLAMAÇÃO": "Produtivo",
+                "REUNIÃO": "Produtivo",
+                "SPAM": "Improdutivo",
+                "POSSÍVEL GOLPE": "Improdutivo",
+                "INFORMATIVO": "Improdutivo",
+                "NÃO IMPORTANTE": "Improdutivo",
+            }
+
             valid_categories = {"Produtivo", "Improdutivo"}
-            if data.get("category") not in valid_categories:
-                logger.warning("Invalid category returned by Claude: '%s' — inferring from tag", data.get("category"))
-                tag_to_category = {
-                    "URGENTE": "Produtivo",
-                    "SOLICITAÇÃO": "Produtivo",
-                    "RECLAMAÇÃO": "Produtivo",
-                    "REUNIÃO": "Produtivo",
-                    "SPAM": "Improdutivo",
-                    "POSSÍVEL GOLPE": "Improdutivo",
-                    "INFORMATIVO": "Improdutivo",
-                    "NÃO IMPORTANTE": "Improdutivo",
-                }
-                inferred = tag_to_category.get(data.get("tag", "").upper())
-                if inferred:
-                    logger.info("Category inferred from tag '%s' → '%s'", data.get("tag"), inferred)
-                    data["category"] = inferred
+            category = data.get("category")
+            tag = data.get("tag", "").upper()
+            expected_category = tag_to_category.get(tag)
+
+            if category not in valid_categories:
+                if expected_category:
+                    logger.warning("Invalid category '%s' — overriding with '%s' based on tag '%s'", category, expected_category, tag)
+                    data["category"] = expected_category
                 else:
-                    logger.error("Could not infer category from tag: %s", data.get("tag"))
                     raise ClassificationError(
-                        f"AI returned an invalid category: '{data.get('category')}'. Expected 'Produtivo' or 'Improdutivo'."
+                        f"AI returned an invalid category: '{category}'. Expected 'Produtivo' or 'Improdutivo'."
                     )
+            elif expected_category and category != expected_category:
+                logger.warning("Category '%s' inconsistent with tag '%s' — overriding to '%s'", category, tag, expected_category)
+                data["category"] = expected_category
 
             return ClassificationResult(
                 category=data["category"],
