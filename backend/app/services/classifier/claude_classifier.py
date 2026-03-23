@@ -106,10 +106,26 @@ class ClaudeClassifier(Classifier):
 
             valid_categories = {"Produtivo", "Improdutivo"}
             if data.get("category") not in valid_categories:
-                logger.error("Invalid category returned by Claude: %s", data.get("category"))
-                raise ClassificationError(
-                    f"AI returned an invalid category: '{data.get('category')}'. Expected 'Produtivo' or 'Improdutivo'."
-                )
+                logger.warning("Invalid category returned by Claude: '%s' — inferring from tag", data.get("category"))
+                tag_to_category = {
+                    "URGENTE": "Produtivo",
+                    "SOLICITAÇÃO": "Produtivo",
+                    "RECLAMAÇÃO": "Produtivo",
+                    "REUNIÃO": "Produtivo",
+                    "SPAM": "Improdutivo",
+                    "POSSÍVEL GOLPE": "Improdutivo",
+                    "INFORMATIVO": "Improdutivo",
+                    "NÃO IMPORTANTE": "Improdutivo",
+                }
+                inferred = tag_to_category.get(data.get("tag", "").upper())
+                if inferred:
+                    logger.info("Category inferred from tag '%s' → '%s'", data.get("tag"), inferred)
+                    data["category"] = inferred
+                else:
+                    logger.error("Could not infer category from tag: %s", data.get("tag"))
+                    raise ClassificationError(
+                        f"AI returned an invalid category: '{data.get('category')}'. Expected 'Produtivo' or 'Improdutivo'."
+                    )
 
             return ClassificationResult(
                 category=data["category"],
