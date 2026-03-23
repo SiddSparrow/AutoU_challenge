@@ -41,6 +41,8 @@ Responda APENAS com um JSON válido no seguinte formato, sem texto adicional:
   "suggested_response": "Resposta profissional sugerida em português"
 }
 
+ATENÇÃO: O campo "category" deve ser EXATAMENTE a string "Produtivo" ou "Improdutivo". Nunca use o nome de uma tag (ex: "INFORMATIVO", "SPAM") como valor de "category".
+
 ## Exemplos:
 
 Email: "Prezado suporte, gostaria de saber o status do chamado #12345 aberto semana passada referente ao erro no sistema de pagamentos."
@@ -101,6 +103,13 @@ class ClaudeClassifier(Classifier):
 
             data = json.loads(cleaned)
             logger.info("JSON parsed successfully | category=%s", data.get("category"))
+
+            valid_categories = {"Produtivo", "Improdutivo"}
+            if data.get("category") not in valid_categories:
+                logger.error("Invalid category returned by Claude: %s", data.get("category"))
+                raise ClassificationError(
+                    f"AI returned an invalid category: '{data.get('category')}'. Expected 'Produtivo' or 'Improdutivo'."
+                )
 
             return ClassificationResult(
                 category=data["category"],
