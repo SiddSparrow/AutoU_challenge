@@ -1,6 +1,6 @@
 # Email Classifier
 
-Aplicação web para classificação inteligente de emails do setor financeiro. Classifica emails como **Produtivo** ou **Improdutivo**, atribui uma tag, gera um resumo e sugere resposta automática.
+Aplicação web para classificação inteligente de emails. Classifica emails como **Produtivo** ou **Improdutivo**, atribui uma tag, gera um resumo e sugere resposta automática.
 
 ## Stack
 
